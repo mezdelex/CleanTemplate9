@@ -1,0 +1,30 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=LapGMhZn55d3omG2jlLZ
+    ports:
+      - "1433:1433"
+    restart: always
+    volumes:
+      - .containers/ddbb/mssqlserver/data:/var/opt/mssql/data
+      - .containers/ddbb/mssqlserver/logs:/var/opt/mssql/log
+
+  rabbitmq:
+    image: rabbitmq:management
+
+    environment:
+      RABBITMQ_DEFAULT_USER: mezdelex
+      RABBITMQ_DEFAULT_PASS: mezdelex
+    hostname: rabbitmq
+    ports:
+      # AMQP protocol port
+      - 5672:5672
+      # HTTP management UI
+      - 15672:15672
+    restart: always
+    volumes:
+      - .containers/brokers/rabbitmq/data/:/var/lib/rabbitmq
+      - .containers/brokers/rabbitmq/log/:/var/log/rabbitmq

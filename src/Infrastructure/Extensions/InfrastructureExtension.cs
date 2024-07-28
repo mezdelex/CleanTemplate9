@@ -1,0 +1,69 @@
+using Application.Abstractions;
+using Application.Contexts;
+using Domain.Persistence;
+using Infrastructure.Contexts;
+using Infrastructure.MessageBrokers.RabbitMQ;
+using Infrastructure.Persistence;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace Infrastructure.Extensions;
+
+public static class InfrastructureExtension
+{
+    public static void AddInfrastructureDependencies(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+        );
+        services.AddScoped<IApplicationDbContext>(provider =>
+            provider.GetRequiredService<ApplicationDbContext>()
+        );
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.Configure<RabbitMQSettings>(rabbitMQSettings =>
+        {
+            var rabbitMQSection = configuration.GetSection("RabbitMQ");
+
+            rabbitMQSettings.Host = rabbitMQSection["Host"] ?? string.Empty;
+            rabbitMQSettings.Username = rabbitMQSection["Username"] ?? string.Empty;
+            rabbitMQSettings.Password = rabbitMQSection["Password"] ?? string.Empty;
+        });
+        services.AddSingleton(provider =>
+            provider.GetRequiredService<IOptions<RabbitMQSettings>>().Value
+        );
+        services.AddScoped<IEventBus, RabbitMQEventBus>();
+
+        services.AddMassTransit(busRegistrationConfigurator =>
+        {
+            busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
+            /* busRegistrationConfigurator.AddConsumer<AddConsumersHere>(); */
+            /* busRegistrationConfigurator.AddConsumer<AddConsumersHere>(); */
+            /* busRegistrationConfigurator.AddConsumer<AddConsumersHere>(); */
+            /* busRegistrationConfigurator.AddConsumer<AddConsumersHere>(); */
+            busRegistrationConfigurator.UsingRabbitMq(
+                (busRegistrationContext, rabbitMQBusFactoryConfigurator) =>
+                {
+                    var settings = busRegistrationContext.GetRequiredService<RabbitMQSettings>();
+
+                    rabbitMQBusFactoryConfigurator.Host(
+                        new Uri(settings.Host),
+                        rabbitMQHostConfigurator =>
+                        {
+                            rabbitMQHostConfigurator.Username(settings.Username);
+                            rabbitMQHostConfigurator.Password(settings.Password);
+                        }
+                    );
+                    rabbitMQBusFactoryConfigurator.ConfigureEndpoints(busRegistrationContext);
+                }
+            );
+        });
+    }
+}

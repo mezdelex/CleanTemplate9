@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Application\Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="masstransit" Version="8.2.3" />
+    <PackageReference Include="masstransit.rabbitmq" Version="8.2.3" />
+    <PackageReference Include="microsoft.aspnetcore.openapi" Version="8.0.7" />
+    <PackageReference Include="microsoft.entityframeworkcore" Version="8.0.7" />
+    <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="8.0.7" />
+    <PackageReference Include="microsoft.entityframeworkcore.tools" Version="8.0.7">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
