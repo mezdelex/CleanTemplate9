@@ -5,12 +5,12 @@ namespace Domain.Extensions.Collections;
 public static class Collections
 {
     public sealed record PagedList<T>(
-        List<T> items,
+        List<T> Items,
         int Page,
         int PageSize,
         int TotalCount,
-        bool hasPreviousPage,
-        bool hasNextPage
+        bool HasPreviousPage,
+        bool HasNextPage
     );
 
     public static async Task<PagedList<T>> ToPagedListAsync<T>(
