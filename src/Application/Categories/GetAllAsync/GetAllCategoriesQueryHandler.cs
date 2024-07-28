@@ -1,23 +1,23 @@
+using Application.Categories.Shared;
 using Application.Contexts;
-using Application.Shared;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static Domain.Extensions.Collections.Collections;
 
 namespace Application.Categories.GetAllAsync;
 
-public class GetAllCategoriesQueryAsyncHandler
-    : IRequestHandler<GetAllCategoriesQueryAsync, PagedList<CategoryDTO>>
+public class GetAllCategoriesQueryHandler
+    : IRequestHandler<GetAllCategoriesQuery, PagedList<CategoryDTO>>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetAllCategoriesQueryAsyncHandler(IApplicationDbContext context)
+    public GetAllCategoriesQueryHandler(IApplicationDbContext context)
     {
         _context = context;
     }
 
     public async Task<PagedList<CategoryDTO>> Handle(
-        GetAllCategoriesQueryAsync request,
+        GetAllCategoriesQuery request,
         CancellationToken cancellationToken
     ) =>
         await _context

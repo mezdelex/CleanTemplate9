@@ -1,22 +1,22 @@
+using Application.Categories.Shared;
 using Application.Contexts;
-using Application.Shared;
 using Domain.Categories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories.GetAsync;
 
-public class GetCategoryQueryAsyncHandler : IRequestHandler<GetCategoryQueryAsync, CategoryDTO>
+public class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, CategoryDTO>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetCategoryQueryAsyncHandler(IApplicationDbContext context)
+    public GetCategoryQueryHandler(IApplicationDbContext context)
     {
         _context = context;
     }
 
     public async Task<CategoryDTO> Handle(
-        GetCategoryQueryAsync request,
+        GetCategoryQuery request,
         CancellationToken cancellationToken
     )
     {

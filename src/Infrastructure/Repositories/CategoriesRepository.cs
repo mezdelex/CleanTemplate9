@@ -3,7 +3,7 @@ using Domain.Categories;
 
 namespace Infrastructure.Repositories;
 
-public class CategoriesRepository : ICategoriesRepository
+public sealed class CategoriesRepository : ICategoriesRepository
 {
     private readonly IApplicationDbContext _context;
 
@@ -12,18 +12,27 @@ public class CategoriesRepository : ICategoriesRepository
         _context = context;
     }
 
-    public Task PatchAsync(Guid Id, Category category, CancellationToken cancellation)
+    public async Task PatchAsync(Category category, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var foundCategory = await _context.Categories.FindAsync(category.Id, cancellationToken);
+
+        if (foundCategory == null)
+            throw new CategoryNotFoundException(category.Id);
+
+        foundCategory.Name = category.Name;
+        foundCategory.Description = category.Description;
     }
 
-    public Task PostAsync(Category category, CancellationToken cancellation)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task PostAsync(Category category, CancellationToken cancellationToken) =>
+        await _context.Categories.AddAsync(category, cancellationToken);
 
-    public Task DeleteAsync(Guid Id, CancellationToken cancellation)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var foundCategory = await _context.Categories.FindAsync(id, cancellationToken);
+
+        if (foundCategory == null)
+            throw new CategoryNotFoundException(id);
+
+        _context.Categories.Remove(foundCategory);
     }
 }

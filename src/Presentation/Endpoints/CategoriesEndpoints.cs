@@ -1,5 +1,8 @@
+using Application.Categories.DeleteAsync;
 using Application.Categories.GetAllAsync;
 using Application.Categories.GetAsync;
+using Application.Categories.PatchAsync;
+using Application.Categories.PostAsync;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -19,9 +22,9 @@ public static class CategoriesEndpoints
 
         group.MapGet("", GetAllCategoriesQueryAsync).RequireAuthorization();
         group.MapGet("{id:guid}", GetCategoryQueryAsync).RequireAuthorization();
-        /* group.MapPatch("", CreateUserAsync); */
-        /* group.MapPost("", CreateUserAsync); */
-        /* group.MapDelete("", CreateUserAsync); */
+        group.MapPatch("", PatchCategoryCommandAsync).RequireAuthorization();
+        group.MapPost("", PostCategoryCommandAsync).RequireAuthorization();
+        group.MapDelete("{id:guid}", DeleteCategoryCommandAsync).RequireAuthorization();
     }
 
     public static async Task<IResult> GetAllCategoriesQueryAsync(
@@ -32,7 +35,7 @@ public static class CategoriesEndpoints
     {
         try
         {
-            return Results.Ok(await sender.Send(new GetAllCategoriesQueryAsync(page, pageSize)));
+            return Results.Ok(await sender.Send(new GetAllCategoriesQuery(page, pageSize)));
         }
         catch (Exception e)
         {
@@ -46,13 +49,70 @@ public static class CategoriesEndpoints
     {
         try
         {
-            return Results.Ok(await sender.Send(new GetCategoryQueryAsync(id)));
+            return Results.Ok(await sender.Send(new GetCategoryQuery(id)));
         }
         catch (Exception e)
         {
             _logger.LogError(e.Message, e);
 
             return Results.NotFound(e.Message);
+        }
+    }
+
+    public static async Task<IResult> PatchCategoryCommandAsync(
+        [FromBody] PatchCategoryCommand command,
+        ISender sender
+    )
+    {
+        try
+        {
+            await sender.Send(command);
+
+            return Results.NoContent();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message, e);
+
+            return Results.BadRequest(e.Message);
+        }
+    }
+
+    public static async Task<IResult> PostCategoryCommandAsync(
+        [FromBody] PostCategoryCommand command,
+        ISender sender
+    )
+    {
+        try
+        {
+            await sender.Send(command);
+
+            return Results.NoContent();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message, e);
+
+            return Results.BadRequest(e.Message);
+        }
+    }
+
+    public static async Task<IResult> DeleteCategoryCommandAsync(
+        [FromRoute] Guid id,
+        ISender sender
+    )
+    {
+        try
+        {
+            await sender.Send(new DeleteCategoryCommand(id));
+
+            return Results.NoContent();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message, e);
+
+            return Results.BadRequest(e.Message);
         }
     }
 }

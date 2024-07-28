@@ -1,5 +1,5 @@
 using Domain.Expenses;
 
-namespace Application.Shared;
+namespace Application.Categories.Shared;
 
 public record CategoryDTO(Guid id, string Name, string Description, List<Expense>? Expenses);

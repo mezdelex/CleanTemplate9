@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.Extensions;
@@ -9,5 +10,6 @@ public static class ApplicationExtension
         var assembly = typeof(ApplicationExtension).Assembly;
 
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
+        services.AddValidatorsFromAssembly(assembly);
     }
 }

@@ -27,7 +27,6 @@ builder.Services.AddAuthorization(options =>
 
     options.DefaultPolicy = policy;
 });
-
 builder
     .Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -56,6 +55,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapIdentityApi<User>();
+
 app.MapCategoriesEndpoints();
 
 app.UseSerilogRequestLogging();

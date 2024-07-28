@@ -1,9 +1,11 @@
 using Application.Abstractions;
 using Application.Contexts;
+using Domain.Categories;
 using Domain.Persistence;
 using Infrastructure.Contexts;
 using Infrastructure.MessageBrokers.RabbitMQ;
 using Infrastructure.Persistence;
+using Infrastructure.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +29,7 @@ public static class InfrastructureExtension
         );
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 
         services.Configure<RabbitMQSettings>(rabbitMQSettings =>
         {
