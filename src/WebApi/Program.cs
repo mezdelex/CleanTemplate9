@@ -32,7 +32,6 @@ builder
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddApiEndpoints();
 
-/* TODO: fill the consumers */
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 

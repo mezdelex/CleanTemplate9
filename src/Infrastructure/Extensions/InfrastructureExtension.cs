@@ -1,4 +1,6 @@
 using Application.Abstractions;
+using Application.Categories.PatchAsync;
+using Application.Categories.PostAsync;
 using Application.Contexts;
 using Domain.Categories;
 using Domain.Persistence;
@@ -47,10 +49,8 @@ public static class InfrastructureExtension
         services.AddMassTransit(busRegistrationConfigurator =>
         {
             busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
-            /* busRegistrationConfigurator.AddConsumer<AddConsumersHere>(); */
-            /* busRegistrationConfigurator.AddConsumer<AddConsumersHere>(); */
-            /* busRegistrationConfigurator.AddConsumer<AddConsumersHere>(); */
-            /* busRegistrationConfigurator.AddConsumer<AddConsumersHere>(); */
+            busRegistrationConfigurator.AddConsumer<PatchedCategoryEventConsumer>();
+            busRegistrationConfigurator.AddConsumer<PostedCategoryEventConsumer>();
             busRegistrationConfigurator.UsingRabbitMq(
                 (busRegistrationContext, rabbitMQBusFactoryConfigurator) =>
                 {

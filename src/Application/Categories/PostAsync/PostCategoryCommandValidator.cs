@@ -21,7 +21,7 @@ public sealed class PostCategoryCommandValidator : AbstractValidator<PostCategor
             )
             .MaximumLength(NameMaxLength)
             .WithMessage(
-                GenericValidationMessages.ShouldBeThisCharactersLong(
+                GenericValidationMessages.ShouldNotBeLongerThan(
                     nameof(PostCategoryCommand.Name),
                     NameMaxLength
                 )
@@ -38,7 +38,7 @@ public sealed class PostCategoryCommandValidator : AbstractValidator<PostCategor
             )
             .MaximumLength(DescriptionMaxLength)
             .WithMessage(
-                GenericValidationMessages.ShouldBeThisCharactersLong(
+                GenericValidationMessages.ShouldNotBeLongerThan(
                     nameof(PostCategoryCommand.Description),
                     DescriptionMaxLength
                 )

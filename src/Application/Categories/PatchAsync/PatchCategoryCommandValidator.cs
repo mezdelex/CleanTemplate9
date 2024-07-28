@@ -20,6 +20,7 @@ public sealed class PatchCategoryCommandValidator : AbstractValidator<PatchCateg
             .Must(id => id.GetType() == typeof(Guid))
             .WithMessage(GenericValidationMessages.ShouldBeAGuid(nameof(PatchCategoryCommand.Id)));
 
+
         RuleFor(c => c.Name)
             .NotEmpty()
             .WithMessage(
@@ -31,7 +32,7 @@ public sealed class PatchCategoryCommandValidator : AbstractValidator<PatchCateg
             )
             .MaximumLength(NameMaxLength)
             .WithMessage(
-                GenericValidationMessages.ShouldBeThisCharactersLong(
+                GenericValidationMessages.ShouldNotBeLongerThan(
                     nameof(PatchCategoryCommand.Name),
                     NameMaxLength
                 )
@@ -48,7 +49,7 @@ public sealed class PatchCategoryCommandValidator : AbstractValidator<PatchCateg
             )
             .MaximumLength(DescriptionMaxLength)
             .WithMessage(
-                GenericValidationMessages.ShouldBeThisCharactersLong(
+                GenericValidationMessages.ShouldNotBeLongerThan(
                     nameof(PatchCategoryCommand.Description),
                     DescriptionMaxLength
                 )

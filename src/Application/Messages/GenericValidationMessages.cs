@@ -8,6 +8,6 @@ public static class GenericValidationMessages
 
     public static string ShouldBeAGuid(string property) => $"{property} should not be a Guid.";
 
-    public static string ShouldBeThisCharactersLong(string property, int length) =>
+    public static string ShouldNotBeLongerThan(string property, int length) =>
         $"{property} should be a maximum of {length} characters long.";
 }
