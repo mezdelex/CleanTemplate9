@@ -12,18 +12,25 @@ public class ExpensesRepository : IExpensesRepository
         _context = context;
     }
 
-    public Task PatchAsync(Guid Id, Expense expense, CancellationToken cancellation)
+    public async Task PatchAsync(Expense expense, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var foundExpense =
+            await _context.Expenses.FindAsync(expense.Id, cancellationToken)
+            ?? throw new ExpenseNotFoundException(expense.Id);
+
+        _context.Expenses.Entry(foundExpense).CurrentValues.SetValues(expense);
+        _context.Expenses.Entry(foundExpense).Property(p => p.Id).IsModified = false;
     }
 
-    public Task PostAsync(Expense expense, CancellationToken cancellation)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task PostAsync(Expense expense, CancellationToken cancellationToken) =>
+        await _context.Expenses.AddAsync(expense, cancellationToken);
 
-    public Task DeleteAsync(Guid Id, CancellationToken cancellation)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellation)
     {
-        throw new NotImplementedException();
+        var foundExpense =
+            await _context.Expenses.FindAsync(id, cancellation)
+            ?? throw new ExpenseNotFoundException(id);
+
+        _context.Expenses.Remove(foundExpense);
     }
 }

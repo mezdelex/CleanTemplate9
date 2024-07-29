@@ -6,7 +6,7 @@ using static Domain.Extensions.Collections.Collections;
 
 namespace Application.Categories.GetAllAsync;
 
-public class GetAllCategoriesQueryHandler
+public sealed class GetAllCategoriesQueryHandler
     : IRequestHandler<GetAllCategoriesQuery, PagedList<CategoryDTO>>
 {
     private readonly IApplicationDbContext _context;

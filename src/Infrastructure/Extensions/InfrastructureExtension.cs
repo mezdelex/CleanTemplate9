@@ -2,7 +2,10 @@ using Application.Abstractions;
 using Application.Categories.PatchAsync;
 using Application.Categories.PostAsync;
 using Application.Contexts;
+using Application.Expenses.PatchAsync;
+using Application.Expenses.PostAsync;
 using Domain.Categories;
+using Domain.Expenses;
 using Domain.Persistence;
 using Infrastructure.Contexts;
 using Infrastructure.MessageBrokers.RabbitMQ;
@@ -32,6 +35,7 @@ public static class InfrastructureExtension
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+        services.AddScoped<IExpensesRepository, ExpensesRepository>();
 
         services.Configure<RabbitMQSettings>(rabbitMQSettings =>
         {
@@ -50,7 +54,9 @@ public static class InfrastructureExtension
         {
             busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
             busRegistrationConfigurator.AddConsumer<PatchedCategoryEventConsumer>();
+            busRegistrationConfigurator.AddConsumer<PatchedExpenseEventConsumer>();
             busRegistrationConfigurator.AddConsumer<PostedCategoryEventConsumer>();
+            busRegistrationConfigurator.AddConsumer<PostedExpenseEventConsumer>();
             busRegistrationConfigurator.UsingRabbitMq(
                 (busRegistrationContext, rabbitMQBusFactoryConfigurator) =>
                 {

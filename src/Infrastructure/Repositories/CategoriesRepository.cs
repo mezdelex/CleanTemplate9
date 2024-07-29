@@ -14,13 +14,12 @@ public sealed class CategoriesRepository : ICategoriesRepository
 
     public async Task PatchAsync(Category category, CancellationToken cancellationToken)
     {
-        var foundCategory = await _context.Categories.FindAsync(category.Id, cancellationToken);
+        var foundCategory =
+            await _context.Categories.FindAsync(category.Id, cancellationToken)
+            ?? throw new CategoryNotFoundException(category.Id);
 
-        if (foundCategory == null)
-            throw new CategoryNotFoundException(category.Id);
-
-        foundCategory.Name = category.Name;
-        foundCategory.Description = category.Description;
+        _context.Categories.Entry(foundCategory).CurrentValues.SetValues(category);
+        _context.Categories.Entry(foundCategory).Property(p => p.Id).IsModified = false;
     }
 
     public async Task PostAsync(Category category, CancellationToken cancellationToken) =>
@@ -28,10 +27,9 @@ public sealed class CategoriesRepository : ICategoriesRepository
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var foundCategory = await _context.Categories.FindAsync(id, cancellationToken);
-
-        if (foundCategory == null)
-            throw new CategoryNotFoundException(id);
+        var foundCategory =
+            await _context.Categories.FindAsync(id, cancellationToken)
+            ?? throw new CategoryNotFoundException(id);
 
         _context.Categories.Remove(foundCategory);
     }

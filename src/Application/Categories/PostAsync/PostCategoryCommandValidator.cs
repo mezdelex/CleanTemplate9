@@ -15,10 +15,6 @@ public sealed class PostCategoryCommandValidator : AbstractValidator<PostCategor
             .WithMessage(
                 GenericValidationMessages.ShouldNotBeEmpty(nameof(PostCategoryCommand.Name))
             )
-            .NotNull()
-            .WithMessage(
-                GenericValidationMessages.ShouldNotBeNull(nameof(PostCategoryCommand.Name))
-            )
             .MaximumLength(NameMaxLength)
             .WithMessage(
                 GenericValidationMessages.ShouldNotBeLongerThan(
@@ -31,10 +27,6 @@ public sealed class PostCategoryCommandValidator : AbstractValidator<PostCategor
             .NotEmpty()
             .WithMessage(
                 GenericValidationMessages.ShouldNotBeEmpty(nameof(PostCategoryCommand.Description))
-            )
-            .NotNull()
-            .WithMessage(
-                GenericValidationMessages.ShouldNotBeNull(nameof(PostCategoryCommand.Description))
             )
             .MaximumLength(DescriptionMaxLength)
             .WithMessage(

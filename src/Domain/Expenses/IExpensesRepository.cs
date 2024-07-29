@@ -2,7 +2,7 @@ namespace Domain.Expenses;
 
 public interface IExpensesRepository
 {
-    Task PatchAsync(Guid Id, Expense expense, CancellationToken cancellation);
-    Task PostAsync(Expense expense, CancellationToken cancellation);
-    Task DeleteAsync(Guid Id, CancellationToken cancellation);
+    Task PatchAsync(Expense expense, CancellationToken cancellationToken);
+    Task PostAsync(Expense expense, CancellationToken cancellationToken);
+    Task DeleteAsync(Guid Id, CancellationToken cancellationToken);
 }

@@ -56,6 +56,7 @@ app.UseAuthorization();
 app.MapIdentityApi<User>();
 
 app.MapCategoriesEndpoints();
+app.MapExpensesEndpoints();
 
 app.UseSerilogRequestLogging();
 
