@@ -1,26 +1,31 @@
 using Application.Categories.GetAllAsync;
+using Application.Categories.Shared;
 using Application.Contexts;
+using Domain.Cache;
 using Domain.Categories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using static Domain.Extensions.Collections.Collections;
 
 namespace Application.UnitTests.Categories.GetAllAsync;
 
 public sealed class GetAllCategoriesQueryHandlerTests
 {
     private readonly CancellationToken _cancellationToken;
-    private readonly Mock<IApplicationDbContext> _context;
     private readonly Mock<DbSet<Category>> _dbSet;
+    private readonly Mock<IApplicationDbContext> _context;
     private readonly GetAllCategoriesQueryHandler _handler;
+    private readonly Mock<IRedisCache> _redisCache;
 
     public GetAllCategoriesQueryHandlerTests()
     {
         _cancellationToken = new();
-        _context = new();
         _dbSet = new();
+        _context = new();
+        _redisCache = new();
 
-        _handler = new GetAllCategoriesQueryHandler(_context.Object);
+        _handler = new GetAllCategoriesQueryHandler(_context.Object, _redisCache.Object);
     }
 
     [Fact]
@@ -56,6 +61,20 @@ public sealed class GetAllCategoriesQueryHandlerTests
             .Setup(mock => mock.GetEnumerator())
             .Returns(categories.AsQueryable().GetEnumerator());
         _context.Setup(mock => mock.Categories).Returns(_dbSet.Object).Verifiable();
+        _redisCache
+            .Setup(mock =>
+                mock.GetCachedData<PagedList<CategoryDTO>>(nameof(GetAllCategoriesQuery))
+            )
+            .ReturnsAsync((PagedList<CategoryDTO>)null!);
+        _redisCache
+            .Setup(mock =>
+                mock.SetCachedData(
+                    nameof(GetAllCategoriesQuery),
+                    It.IsAny<PagedList<CategoryDTO>>(),
+                    It.IsAny<DateTimeOffset>()
+                )
+            )
+            .Returns(Task.CompletedTask);
 
         // Act
         var result = await _handler.Handle(getAllCategoriesQuery, _cancellationToken);
@@ -73,5 +92,18 @@ public sealed class GetAllCategoriesQueryHandlerTests
         result.HasPreviousPage.Should().Be(false);
         result.HasNextPage.Should().Be(false);
         _context.Verify();
+        _redisCache.Verify(
+            mock => mock.GetCachedData<PagedList<CategoryDTO>>(nameof(GetAllCategoriesQuery)),
+            Times.Once
+        );
+        _redisCache.Verify(
+            mock =>
+                mock.SetCachedData(
+                    nameof(GetAllCategoriesQuery),
+                    It.IsAny<PagedList<CategoryDTO>>(),
+                    It.IsAny<DateTimeOffset>()
+                ),
+            Times.Once
+        );
     }
 }

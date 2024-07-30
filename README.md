@@ -1,6 +1,6 @@
 # .NET 8 Clean Architecture Template
 
-.NET 8 Clean Architecture + DDD + CQRS + Domain Events + Testing + Identity
+.NET 8 Clean Architecture + DDD + CQRS + Domain Events + Testing + Identity + Redis
 
 ## Docker
 

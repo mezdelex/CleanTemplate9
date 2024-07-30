@@ -17,7 +17,7 @@ services:
 
     environment:
       RABBITMQ_DEFAULT_USER: mezdelex
-      RABBITMQ_DEFAULT_PASS: mezdelex
+      RABBITMQ_DEFAULT_PASS: LapGMhZn55d3omG2jlLZ
     hostname: rabbitmq
     ports:
       # AMQP protocol port
@@ -28,3 +28,12 @@ services:
     volumes:
       - .containers/brokers/rabbitmq/data/:/var/lib/rabbitmq
       - .containers/brokers/rabbitmq/log/:/var/log/rabbitmq
+
+  redis:
+    image: redis
+
+    ports:
+      - "6379:6379"
+    volumes:
+      - .containers/cache/redis/data:/data
+      - .containers/cache/redis/config/redis.conf:/usr/local/etc/redis/redis.conf

@@ -10,15 +10,15 @@ namespace Application.UnitTests.Categories.GetAsync;
 public sealed class GetCategoryQueryHandlerTests
 {
     private readonly CancellationToken _cancellationToken;
-    private readonly Mock<IApplicationDbContext> _context;
     private readonly Mock<DbSet<Category>> _dbSet;
+    private readonly Mock<IApplicationDbContext> _context;
     private readonly GetCategoryQueryHandler _handler;
 
     public GetCategoryQueryHandlerTests()
     {
         _cancellationToken = new();
-        _context = new();
         _dbSet = new();
+        _context = new();
 
         _handler = new GetCategoryQueryHandler(_context.Object);
     }

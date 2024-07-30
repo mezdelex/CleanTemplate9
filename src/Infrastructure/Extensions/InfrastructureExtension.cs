@@ -4,9 +4,11 @@ using Application.Categories.PostAsync;
 using Application.Contexts;
 using Application.Expenses.PatchAsync;
 using Application.Expenses.PostAsync;
+using Domain.Cache;
 using Domain.Categories;
 using Domain.Expenses;
 using Domain.Persistence;
+using Infrastructure.Cache;
 using Infrastructure.Contexts;
 using Infrastructure.MessageBrokers.RabbitMQ;
 using Infrastructure.Persistence;
@@ -16,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
 namespace Infrastructure.Extensions;
 
@@ -33,6 +36,18 @@ public static class InfrastructureExtension
             provider.GetRequiredService<ApplicationDbContext>()
         );
 
+        services.AddSingleton<IConnectionMultiplexer>(_ =>
+        {
+            var redisSection = configuration.GetSection("Redis");
+
+            return ConnectionMultiplexer.Connect(
+                $"{redisSection["Host"]},password={redisSection["Password"]}"
+            );
+        });
+        services.AddScoped<IDatabase>(provider =>
+            provider.GetRequiredService<IConnectionMultiplexer>().GetDatabase()
+        );
+        services.AddScoped<IRedisCache, RedisCache>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
         services.AddScoped<IExpensesRepository, ExpensesRepository>();
