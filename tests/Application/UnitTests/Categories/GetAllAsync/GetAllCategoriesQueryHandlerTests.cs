@@ -35,6 +35,7 @@ public sealed class GetAllCategoriesQueryHandlerTests
         var page = 1;
         var pageSize = 2;
         var getAllCategoriesQuery = new GetAllCategoriesQuery(page, pageSize);
+        var redisKey = $"{nameof(GetAllCategoriesQuery)}#{page}#{pageSize}";
         var categories = new List<Category>
         {
             new(Guid.NewGuid(), "Name 1", "Description 1"),
@@ -62,14 +63,12 @@ public sealed class GetAllCategoriesQueryHandlerTests
             .Returns(categories.AsQueryable().GetEnumerator());
         _context.Setup(mock => mock.Categories).Returns(_dbSet.Object).Verifiable();
         _redisCache
-            .Setup(mock =>
-                mock.GetCachedData<PagedList<CategoryDTO>>(nameof(GetAllCategoriesQuery))
-            )
+            .Setup(mock => mock.GetCachedData<PagedList<CategoryDTO>>(redisKey))
             .ReturnsAsync((PagedList<CategoryDTO>)null!);
         _redisCache
             .Setup(mock =>
                 mock.SetCachedData(
-                    nameof(GetAllCategoriesQuery),
+                    redisKey,
                     It.IsAny<PagedList<CategoryDTO>>(),
                     It.IsAny<DateTimeOffset>()
                 )
@@ -93,13 +92,13 @@ public sealed class GetAllCategoriesQueryHandlerTests
         result.HasNextPage.Should().Be(false);
         _context.Verify();
         _redisCache.Verify(
-            mock => mock.GetCachedData<PagedList<CategoryDTO>>(nameof(GetAllCategoriesQuery)),
+            mock => mock.GetCachedData<PagedList<CategoryDTO>>(redisKey),
             Times.Once
         );
         _redisCache.Verify(
             mock =>
                 mock.SetCachedData(
-                    nameof(GetAllCategoriesQuery),
+                    redisKey,
                     It.IsAny<PagedList<CategoryDTO>>(),
                     It.IsAny<DateTimeOffset>()
                 ),

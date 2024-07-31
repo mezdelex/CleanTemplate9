@@ -24,8 +24,9 @@ public sealed class GetAllCategoriesQueryHandler
         CancellationToken cancellationToken
     )
     {
+        var redisKey = $"{nameof(GetAllCategoriesQuery)}#{request.Page}#{request.PageSize}";
         var cachedGetAllCategoriesQuery = await _redisCache.GetCachedData<PagedList<CategoryDTO>>(
-            nameof(GetAllCategoriesQuery)
+            redisKey
         );
         if (cachedGetAllCategoriesQuery != null)
             return cachedGetAllCategoriesQuery;
@@ -37,7 +38,7 @@ public sealed class GetAllCategoriesQueryHandler
             .ToPagedListAsync(request.Page, request.PageSize, cancellationToken);
 
         await _redisCache.SetCachedData<PagedList<CategoryDTO>>(
-            nameof(GetAllCategoriesQuery),
+            redisKey,
             pagedCategories,
             DateTimeOffset.Now.AddMinutes(5)
         );
