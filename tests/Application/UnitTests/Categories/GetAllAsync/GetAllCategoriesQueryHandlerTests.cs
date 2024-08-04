@@ -15,8 +15,8 @@ public sealed class GetAllCategoriesQueryHandlerTests
     private readonly CancellationToken _cancellationToken;
     private readonly Mock<DbSet<Category>> _dbSet;
     private readonly Mock<IApplicationDbContext> _context;
-    private readonly GetAllCategoriesQueryHandler _handler;
     private readonly Mock<IRedisCache> _redisCache;
+    private readonly GetAllCategoriesQueryHandler _handler;
 
     public GetAllCategoriesQueryHandlerTests()
     {
