@@ -1,12 +1,3 @@
-using Application.Extensions;
-using Domain.Users;
-using Infrastructure.Contexts;
-using Infrastructure.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Presentation.Endpoints;
-using Serilog;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -28,7 +19,7 @@ builder.Services.AddAuthorization(options =>
     options.DefaultPolicy = policy;
 });
 builder
-    .Services.AddIdentityCore<User>()
+    .Services.AddIdentityCore<ApplicationUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddApiEndpoints();
 
@@ -50,7 +41,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapIdentityApi<User>();
+app.MapIdentityApi<ApplicationUser>();
 
 app.MapCategoriesEndpoints();
 app.MapExpensesEndpoints();

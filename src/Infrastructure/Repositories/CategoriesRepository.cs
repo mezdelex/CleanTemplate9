@@ -1,6 +1,3 @@
-using Application.Contexts;
-using Domain.Categories;
-
 namespace Infrastructure.Repositories;
 
 public sealed class CategoriesRepository : ICategoriesRepository

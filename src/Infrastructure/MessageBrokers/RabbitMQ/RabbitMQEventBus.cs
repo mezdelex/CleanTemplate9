@@ -1,6 +1,3 @@
-using Application.Abstractions;
-using MassTransit;
-
 namespace Infrastructure.MessageBrokers.RabbitMQ;
 
 public sealed class RabbitMQEventBus : IEventBus

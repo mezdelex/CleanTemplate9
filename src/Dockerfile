@@ -1,5 +1,4 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG PASSWORD
 WORKDIR /app
 COPY . .
 RUN dotnet restore ./WebApi/WebApi.csproj

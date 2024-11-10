@@ -1,6 +1,3 @@
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Application.Extensions;
 
 public static class ApplicationExtension

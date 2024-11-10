@@ -1,15 +1,3 @@
-using Application.Categories.DeleteAsync;
-using Application.Categories.GetAllAsync;
-using Application.Categories.GetAsync;
-using Application.Categories.PatchAsync;
-using Application.Categories.PostAsync;
-using MediatR;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
-
 namespace Presentation.Endpoints;
 
 public static class CategoriesEndpoints

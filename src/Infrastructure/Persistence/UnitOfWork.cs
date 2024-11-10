@@ -1,6 +1,3 @@
-using Domain.Persistence;
-using Infrastructure.Contexts;
-
 namespace Infrastructure.Persistence;
 
 internal sealed class UnitOfWork : IUnitOfWork

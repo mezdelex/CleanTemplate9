@@ -2,8 +2,8 @@ services:
   rabbitmq:
     image: rabbitmq:management
     environment:
-      RABBITMQ_DEFAULT_USER: ${USERNAME}
-      RABBITMQ_DEFAULT_PASS: ${PASSWORD}
+      RABBITMQ_DEFAULT_USER: ${APP_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${APP_PASSWORD}
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
@@ -29,7 +29,7 @@ services:
     image: mcr.microsoft.com/mssql/server
     environment:
       ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: ${PASSWORD}
+      MSSQL_SA_PASSWORD: ${APP_PASSWORD}
     ports:
       - "1433:1433"
     restart: always
@@ -50,8 +50,8 @@ services:
         condition: service_started
     environment:
       ASPNETCORE_HTTP_PORTS: 8000
-      DATABASE: ${DATABASE}
-      USERNAME: ${USERNAME}
-      PASSWORD: ${PASSWORD}
+      DATABASE: ${APP_DATABASE}
+      USERNAME: ${APP_USERNAME}
+      PASSWORD: ${APP_PASSWORD}
     ports:
       - "8000:8000"

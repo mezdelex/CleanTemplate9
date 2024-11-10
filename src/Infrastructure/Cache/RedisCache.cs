@@ -1,7 +1,3 @@
-using System.Text.Json;
-using Domain.Cache;
-using StackExchange.Redis;
-
 namespace Infrastructure.Cache;
 
 public sealed class RedisCache : IRedisCache
@@ -25,7 +21,19 @@ public sealed class RedisCache : IRedisCache
     public async Task SetCachedData<T>(string key, T value, DateTimeOffset dateTimeOffset)
     {
         var expirationTime = dateTimeOffset.DateTime.Subtract(DateTime.Now);
-        await _redisDB.StringSetAsync(key, JsonSerializer.Serialize<T>(value), expirationTime);
+        await _redisDB.StringSetAsync(
+            key,
+            JsonSerializer.Serialize(
+                value,
+                value!.GetType(),
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    WriteIndented = true,
+                }
+            ),
+            expirationTime
+        );
     }
 
     public async Task RemoveData<T>(string key)

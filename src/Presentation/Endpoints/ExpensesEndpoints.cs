@@ -1,15 +1,3 @@
-using Application.Expenses.DeleteAsync;
-using Application.Expenses.GetAllAsync;
-using Application.Expenses.GetAsync;
-using Application.Expenses.PatchAsync;
-using Application.Expenses.PostAsync;
-using MediatR;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
-
 namespace Presentation.Endpoints;
 
 public static class ExpensesEndpoints

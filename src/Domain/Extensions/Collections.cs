@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Domain.Extensions.Collections;
 
 public static class Collections

@@ -1,6 +1,3 @@
-using Application.Contexts;
-using Domain.Expenses;
-
 namespace Infrastructure.Repositories;
 
 public class ExpensesRepository : IExpensesRepository

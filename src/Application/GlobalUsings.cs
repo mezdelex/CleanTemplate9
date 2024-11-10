@@ -1,0 +1,17 @@
+global using Application.Abstractions;
+global using Application.Contexts;
+global using Application.Features.DomainEvents;
+global using Application.Features.Shared;
+global using Application.Messages;
+global using Application.Repositories;
+global using Domain.Cache;
+global using Domain.Entities;
+global using Domain.Exceptions;
+global using static Domain.Extensions.Collections.Collections;
+global using Domain.Persistence;
+global using FluentValidation;
+global using MassTransit;
+global using MediatR;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;

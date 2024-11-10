@@ -1,7 +1,3 @@
-using Domain.Categories;
-using Domain.Expenses;
-using Microsoft.EntityFrameworkCore;
-
 namespace Application.Contexts;
 
 public interface IApplicationDbContext
