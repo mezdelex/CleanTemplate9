@@ -1,25 +1,3 @@
-using Application.Abstractions;
-using Application.Categories.PatchAsync;
-using Application.Categories.PostAsync;
-using Application.Contexts;
-using Application.Expenses.PatchAsync;
-using Application.Expenses.PostAsync;
-using Domain.Cache;
-using Domain.Categories;
-using Domain.Expenses;
-using Domain.Persistence;
-using Infrastructure.Cache;
-using Infrastructure.Contexts;
-using Infrastructure.MessageBrokers.RabbitMQ;
-using Infrastructure.Persistence;
-using Infrastructure.Repositories;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using StackExchange.Redis;
-
 namespace Infrastructure.Extensions;
 
 public static class InfrastructureExtension
@@ -30,7 +8,9 @@ public static class InfrastructureExtension
     )
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+            options.UseSqlServer(
+                $"Server=sqlserver;Database={configuration["DATABASE"]};User Id=sa;Password={configuration["PASSWORD"]};TrustServerCertificate=True"
+            )
         );
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>()
@@ -38,32 +18,16 @@ public static class InfrastructureExtension
 
         services.AddSingleton<IConnectionMultiplexer>(_ =>
         {
-            var redisSection = configuration.GetSection("Redis");
-
-            return ConnectionMultiplexer.Connect(
-                $"{redisSection["Host"]},password={redisSection["Password"]}"
-            );
+            return ConnectionMultiplexer.Connect($"redis,password={configuration["PASSWORD"]}");
         });
         services.AddScoped<IDatabase>(provider =>
             provider.GetRequiredService<IConnectionMultiplexer>().GetDatabase()
         );
         services.AddScoped<IRedisCache, RedisCache>();
+        services.AddScoped<IEventBus, RabbitMQEventBus>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
         services.AddScoped<IExpensesRepository, ExpensesRepository>();
-
-        services.Configure<RabbitMQSettings>(rabbitMQSettings =>
-        {
-            var rabbitMQSection = configuration.GetSection("RabbitMQ");
-
-            rabbitMQSettings.Host = rabbitMQSection["Host"] ?? string.Empty;
-            rabbitMQSettings.Username = rabbitMQSection["Username"] ?? string.Empty;
-            rabbitMQSettings.Password = rabbitMQSection["Password"] ?? string.Empty;
-        });
-        services.AddSingleton(provider =>
-            provider.GetRequiredService<IOptions<RabbitMQSettings>>().Value
-        );
-        services.AddScoped<IEventBus, RabbitMQEventBus>();
 
         services.AddMassTransit(busRegistrationConfigurator =>
         {
@@ -75,14 +39,12 @@ public static class InfrastructureExtension
             busRegistrationConfigurator.UsingRabbitMq(
                 (busRegistrationContext, rabbitMQBusFactoryConfigurator) =>
                 {
-                    var settings = busRegistrationContext.GetRequiredService<RabbitMQSettings>();
-
                     rabbitMQBusFactoryConfigurator.Host(
-                        new Uri(settings.Host),
+                        new Uri("amqp://rabbitmq"),
                         rabbitMQHostConfigurator =>
                         {
-                            rabbitMQHostConfigurator.Username(settings.Username);
-                            rabbitMQHostConfigurator.Password(settings.Password);
+                            rabbitMQHostConfigurator.Username(configuration["USERNAME"]!);
+                            rabbitMQHostConfigurator.Password(configuration["PASSWORD"]!);
                         }
                     );
                     rabbitMQBusFactoryConfigurator.ConfigureEndpoints(busRegistrationContext);
