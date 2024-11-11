@@ -28,7 +28,12 @@ public sealed record PostCategoryCommand(string Name, string Description) : IReq
             if (!results.IsValid)
                 throw new ValidationException(results.ToString().Replace("\r\n", " "));
 
-            var categoryToPost = new Category(Guid.NewGuid(), request.Name, request.Description);
+            var categoryToPost = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = request.Name,
+                Description = request.Description,
+            };
 
             await _repository.PostAsync(categoryToPost, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);

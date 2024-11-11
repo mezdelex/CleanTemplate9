@@ -28,7 +28,12 @@ public sealed record PatchCategoryCommand(Guid Id, string Name, string Descripti
             if (!results.IsValid)
                 throw new ValidationException(results.ToString().Replace("\r\n", " "));
 
-            var categoryToPatch = new Category(request.Id, request.Name, request.Description);
+            var categoryToPatch = new Category
+            {
+                Id = request.Id,
+                Name = request.Name,
+                Description = request.Description,
+            };
 
             await _repository.PatchAsync(categoryToPatch, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);

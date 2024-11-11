@@ -26,6 +26,7 @@ public static class InfrastructureExtension
         services.AddScoped<IRedisCache, RedisCache>();
         services.AddScoped<IEventBus, RabbitMQEventBus>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ISpecificationEvaluator>(provider => new SpecificationEvaluator(true));
         services.AddScoped<ICategoriesRepository, CategoriesRepository>();
         services.AddScoped<IExpensesRepository, ExpensesRepository>();
 

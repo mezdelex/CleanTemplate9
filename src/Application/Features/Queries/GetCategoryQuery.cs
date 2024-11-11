@@ -4,11 +4,11 @@ public sealed record GetCategoryQuery(Guid Id) : IRequest<CategoryDTO>
 {
     public class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, CategoryDTO>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly ICategoriesRepository _repository;
 
-        public GetCategoryQueryHandler(IApplicationDbContext context)
+        public GetCategoryQueryHandler(ICategoriesRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public async Task<CategoryDTO> Handle(
@@ -17,17 +17,16 @@ public sealed record GetCategoryQuery(Guid Id) : IRequest<CategoryDTO>
         )
         {
             var category =
-                await _context
-                    .Categories.AsNoTracking()
-                    .Include(c => c.Expenses)
-                    .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken)
-                ?? throw new CategoryNotFoundException(request.Id);
+                await _repository.GetBySpecAsync(
+                    new CategoriesSpecification(id: request.Id),
+                    cancellationToken
+                ) ?? throw new NotFoundException(request.Id);
 
             return new CategoryDTO(
                 category.Id,
                 category.Name,
                 category.Description,
-                category?.Expenses
+                category.Expenses
             );
         }
     }

@@ -1,17 +1,22 @@
 namespace Application.Features.Queries;
 
-public sealed record GetAllCategoriesQuery(int Page, int PageSize)
-    : IRequest<PagedList<CategoryDTO>>
+public sealed record GetAllCategoriesQuery : BaseRequest, IRequest<PagedList<CategoryDTO>>
 {
+    public string? Name { get; set; }
+    public string? ContainedWord { get; set; }
+
     public sealed class GetAllCategoriesQueryHandler
         : IRequestHandler<GetAllCategoriesQuery, PagedList<CategoryDTO>>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly ICategoriesRepository _repository;
         private readonly IRedisCache _redisCache;
 
-        public GetAllCategoriesQueryHandler(IApplicationDbContext context, IRedisCache redisCache)
+        public GetAllCategoriesQueryHandler(
+            ICategoriesRepository repository,
+            IRedisCache redisCache
+        )
         {
-            _context = context;
+            _repository = repository;
             _redisCache = redisCache;
         }
 
@@ -21,16 +26,19 @@ public sealed record GetAllCategoriesQuery(int Page, int PageSize)
         )
         {
             var redisKey = $"{nameof(GetAllCategoriesQuery)}#{request.Page}#{request.PageSize}";
-            var cachedGetAllCategoriesQuery = await _redisCache.GetCachedData<
-                PagedList<CategoryDTO>
-            >(redisKey);
-            if (cachedGetAllCategoriesQuery != null)
-                return cachedGetAllCategoriesQuery;
+            var cachedPagedCategories = await _redisCache.GetCachedData<PagedList<CategoryDTO>>(
+                redisKey
+            );
+            if (cachedPagedCategories != null)
+                return cachedPagedCategories;
 
-            var pagedCategories = await _context
-                .Categories.AsNoTracking()
-                .Include(c => c.Expenses)
-                .OrderBy(c => c.Name)
+            var pagedCategories = await _repository
+                .ApplySpecification(
+                    new CategoriesSpecification(
+                        name: request.Name,
+                        containedWord: request.ContainedWord
+                    )
+                )
                 .Select(c => new CategoryDTO(c.Id, c.Name, c.Description, c.Expenses))
                 .ToPagedListAsync(request.Page, request.PageSize, cancellationToken);
 

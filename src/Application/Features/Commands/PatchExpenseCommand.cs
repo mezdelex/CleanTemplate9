@@ -34,13 +34,14 @@ public sealed record PatchExpenseCommand(
             if (!results.IsValid)
                 throw new ValidationException(results.ToString().Replace("\r\n", " "));
 
-            var expenseToPatch = new Expense(
-                request.Id,
-                request.Name,
-                request.Description,
-                request.Value,
-                request.CategoryId
-            );
+            var expenseToPatch = new Expense
+            {
+                Id = request.Id,
+                Name = request.Name,
+                Description = request.Description,
+                Value = request.Value,
+                CategoryId = request.CategoryId,
+            };
 
             await _repository.PatchAsync(expenseToPatch, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);

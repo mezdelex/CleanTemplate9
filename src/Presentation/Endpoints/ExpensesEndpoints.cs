@@ -16,6 +16,9 @@ public static class ExpensesEndpoints
     }
 
     public static async Task<IResult> GetAllExpensesQueryAsync(
+        [FromQuery] string? name,
+        [FromQuery] string? containedWord,
+        [FromQuery] Guid? categoryId,
         [FromQuery] int page,
         [FromQuery] int pageSize,
         ISender sender
@@ -23,7 +26,18 @@ public static class ExpensesEndpoints
     {
         try
         {
-            return Results.Ok(await sender.Send(new GetAllExpensesQuery(page, pageSize)));
+            return Results.Ok(
+                await sender.Send(
+                    new GetAllExpensesQuery
+                    {
+                        Name = name,
+                        ContainedWord = containedWord,
+                        CategoryId = categoryId,
+                        Page = page,
+                        PageSize = pageSize,
+                    }
+                )
+            );
         }
         catch (Exception e)
         {

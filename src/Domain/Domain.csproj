@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ardalis.specification" Version="8.0.0" />
     <PackageReference Include="microsoft.aspnetcore.identity.entityframeworkcore" Version="8.0.7" />
     <PackageReference Include="microsoft.entityframeworkcore" Version="8.0.7" />
   </ItemGroup>

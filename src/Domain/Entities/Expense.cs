@@ -1,21 +1,11 @@
 namespace Domain.Entities;
 
-public class Expense
+public class Expense : BaseEntity
 {
-    public Expense(Guid id, string name, string description, double value, Guid categoryId)
-    {
-        Id = id;
-        Name = name;
-        Description = description;
-        Value = value;
-        CategoryId = categoryId;
-    }
-
-    public Guid Id { get; init; }
-    public string Name { get; set; }
-    public string Description { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public double Value { get; set; }
     public Guid CategoryId { get; set; }
 
-    public virtual Category? Category { get; set; } = default;
+    public virtual Category Category { get; set; } = default!;
 }

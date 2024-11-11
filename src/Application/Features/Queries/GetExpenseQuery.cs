@@ -4,11 +4,11 @@ public sealed record GetExpenseQuery(Guid Id) : IRequest<ExpenseDTO>
 {
     public sealed class GetExpenseQueryHandler : IRequestHandler<GetExpenseQuery, ExpenseDTO>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IExpensesRepository _repository;
 
-        public GetExpenseQueryHandler(IApplicationDbContext context)
+        public GetExpenseQueryHandler(IExpensesRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public async Task<ExpenseDTO> Handle(
@@ -17,10 +17,10 @@ public sealed record GetExpenseQuery(Guid Id) : IRequest<ExpenseDTO>
         )
         {
             var expense =
-                await _context
-                    .Expenses.AsNoTracking()
-                    .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
-                ?? throw new ExpenseNotFoundException(request.Id);
+                await _repository.GetBySpecAsync(
+                    new ExpensesSpecification(id: request.Id),
+                    cancellationToken
+                ) ?? throw new NotFoundException(request.Id);
 
             return new ExpenseDTO(
                 expense.Id,

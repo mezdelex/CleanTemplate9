@@ -16,6 +16,8 @@ public static class CategoriesEndpoints
     }
 
     public static async Task<IResult> GetAllCategoriesQueryAsync(
+        [FromQuery] string? name,
+        [FromQuery] string? containedWord,
         [FromQuery] int page,
         [FromQuery] int pageSize,
         ISender sender
@@ -23,7 +25,17 @@ public static class CategoriesEndpoints
     {
         try
         {
-            return Results.Ok(await sender.Send(new GetAllCategoriesQuery(page, pageSize)));
+            return Results.Ok(
+                await sender.Send(
+                    new GetAllCategoriesQuery
+                    {
+                        Name = name,
+                        ContainedWord = containedWord,
+                        Page = page,
+                        PageSize = pageSize,
+                    }
+                )
+            );
         }
         catch (Exception e)
         {

@@ -6,6 +6,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ardalis.specification" Version="8.0.0" />
+    <PackageReference Include="ardalis.specification.entityframeworkcore" Version="8.0.0" />
     <PackageReference Include="masstransit" Version="8.2.3" />
     <PackageReference Include="masstransit.rabbitmq" Version="8.2.3" />
     <PackageReference Include="microsoft.aspnetcore.openapi" Version="8.0.7" />

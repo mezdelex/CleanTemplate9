@@ -33,13 +33,14 @@ public sealed record PostExpenseCommand(
             if (!results.IsValid)
                 throw new ValidationException(results.ToString().Replace("\r\n", " "));
 
-            var expenseToPost = new Expense(
-                Guid.NewGuid(),
-                request.Name,
-                request.Description,
-                request.Value,
-                request.CategoryId
-            );
+            var expenseToPost = new Expense
+            {
+                Id = Guid.NewGuid(),
+                Name = request.Name,
+                Description = request.Description,
+                Value = request.Value,
+                CategoryId = request.CategoryId,
+            };
 
             await _repository.PostAsync(expenseToPost, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);

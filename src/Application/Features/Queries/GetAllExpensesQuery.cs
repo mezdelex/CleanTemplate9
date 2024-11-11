@@ -1,16 +1,20 @@
 namespace Application.Features.Queries;
 
-public record GetAllExpensesQuery(int Page, int PageSize) : IRequest<PagedList<ExpenseDTO>>
+public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<ExpenseDTO>>
 {
+    public string? Name { get; set; }
+    public string? ContainedWord { get; set; }
+    public Guid? CategoryId { get; set; }
+
     public sealed class GetAllExpensesQueryHandler
         : IRequestHandler<GetAllExpensesQuery, PagedList<ExpenseDTO>>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IExpensesRepository _repository;
         private readonly IRedisCache _redisCache;
 
-        public GetAllExpensesQueryHandler(IApplicationDbContext context, IRedisCache redisCache)
+        public GetAllExpensesQueryHandler(IExpensesRepository repository, IRedisCache redisCache)
         {
-            _context = context;
+            _repository = repository;
             _redisCache = redisCache;
         }
 
@@ -20,16 +24,21 @@ public record GetAllExpensesQuery(int Page, int PageSize) : IRequest<PagedList<E
         )
         {
             var redisKey = $"{nameof(GetAllExpensesQuery)}#{request.Page}#{request.PageSize}";
-            var cachedGetAllExpensesQuery = await _redisCache.GetCachedData<PagedList<ExpenseDTO>>(
+            var cachedPagedExpenses = await _redisCache.GetCachedData<PagedList<ExpenseDTO>>(
                 redisKey
             );
-            if (cachedGetAllExpensesQuery != null)
-                return cachedGetAllExpensesQuery;
+            if (cachedPagedExpenses != null)
+                return cachedPagedExpenses;
 
-            var pagedExpenses = await _context
-                .Expenses.AsNoTracking()
-                .OrderBy(e => e.Name)
-                .Select(e => new ExpenseDTO(e.Id, e.Name, e.Description, e.Value, e.CategoryId))
+            var pagedExpenses = await _repository
+                .ApplySpecification(
+                    new ExpensesSpecification(
+                        name: request.Name,
+                        containedWord: request.ContainedWord,
+                        categoryId: request.CategoryId
+                    )
+                )
+                .Select(x => new ExpenseDTO(x.Id, x.Name, x.Description, x.Value, x.CategoryId))
                 .ToPagedListAsync(request.Page, request.PageSize, cancellationToken);
 
             await _redisCache.SetCachedData<PagedList<ExpenseDTO>>(

@@ -6,6 +6,8 @@ global using static Application.Features.DomainEvents.PatchedExpenseEvent;
 global using static Application.Features.DomainEvents.PostedCategoryEvent;
 global using static Application.Features.DomainEvents.PostedExpenseEvent;
 global using Application.Repositories;
+global using Ardalis.Specification;
+global using Ardalis.Specification.EntityFrameworkCore;
 global using Domain.Cache;
 global using Domain.Entities;
 global using Domain.Exceptions;
