@@ -35,7 +35,7 @@ public sealed class PatchCategoryCommandHandlerTests
             "Category 1 description"
         );
         _validator
-            .Setup(mock => mock.ValidateAsync(patchCategoryCommand, _cancellationToken))
+            .Setup(mock => mock.ValidateAsync(It.IsAny<PatchCategoryCommand>(), _cancellationToken))
             .ReturnsAsync(new ValidationResult())
             .Verifiable();
         _repository
@@ -50,9 +50,18 @@ public sealed class PatchCategoryCommandHandlerTests
         await _handler.Handle(patchCategoryCommand, _cancellationToken);
 
         // Assert
-        _validator.Verify();
-        _repository.Verify();
-        _uow.Verify();
-        _eventBus.Verify();
+        _validator.Verify(
+            mock => mock.ValidateAsync(It.IsAny<PatchCategoryCommand>(), _cancellationToken),
+            Times.Once
+        );
+        _repository.Verify(
+            mock => mock.PatchAsync(It.IsAny<Category>(), _cancellationToken),
+            Times.Once
+        );
+        _uow.Verify(mock => mock.SaveChangesAsync(_cancellationToken), Times.Once);
+        _eventBus.Verify(
+            mock => mock.PublishAsync(It.IsAny<PatchedCategoryEvent>(), _cancellationToken),
+            Times.Once
+        );
     }
 }

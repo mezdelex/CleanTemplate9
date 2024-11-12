@@ -1,6 +1,6 @@
 # .NET 8 Clean Architecture Template
 
-.NET 8 Clean Architecture + DDD + CQRS + Domain Events + Testing + Identity + Redis
+.NET 8 Clean Architecture + DDD + CQRS + Specifications + Domain Events + Testing + Identity + Redis
 
 ## Docker
 
@@ -14,4 +14,4 @@
 
 `dotnet ef database update --project .\src\Infrastructure\Infrastructure.csproj --startup-project .\src\WebApi\WebApi.csproj` or just let `ApplyMigrations` extension migrate automatically on `run/watch`.
 
-<sub>There's stuff that should be private kept public on purpose, like `appsettings(.Development).json`, for discoverability.</sub>
+<sub>There's stuff that should've been ignored kept public on purpose, like docker-compose's `.env` variables, for discoverability purposes.</sub>

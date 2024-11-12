@@ -49,9 +49,18 @@ public sealed class PostCategoryCommandHandlerTests
         await _handler.Handle(postCategoryCommand, _cancellationToken);
 
         // Assert
-        _validator.Verify();
-        _repository.Verify();
-        _uow.Verify();
-        _eventBus.Verify();
+        _validator.Verify(
+            mock => mock.ValidateAsync(It.IsAny<PostCategoryCommand>(), _cancellationToken),
+            Times.Once
+        );
+        _repository.Verify(
+            mock => mock.PostAsync(It.IsAny<Category>(), _cancellationToken),
+            Times.Once
+        );
+        _uow.Verify(mock => mock.SaveChangesAsync(_cancellationToken), Times.Once);
+        _eventBus.Verify(
+            mock => mock.PublishAsync(It.IsAny<PostedCategoryEvent>(), _cancellationToken),
+            Times.Once
+        );
     }
 }

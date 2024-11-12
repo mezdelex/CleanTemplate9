@@ -16,19 +16,17 @@ public sealed class GetAllCategoriesQueryHandlerTests
         _handler = new GetAllCategoriesQueryHandler(_repository.Object, _redisCache.Object);
     }
 
-    [Fact(Skip = "Pending IAsyncQueryProvider mock implementation")]
+    [Fact]
     public async Task GetAllCategoriesQueryHandler_ShouldReturnPagedListOfRequestedCategoriesAsListOfCategoryDTOAndMetadata()
     {
         // Arrange
-        var name = "Test";
-        var containedWord = "es";
+        var containedWord = "am";
         var page = 1;
         var pageSize = 2;
         var getAllCategoriesQuery = new GetAllCategoriesQuery
         {
             Page = page,
             PageSize = pageSize,
-            Name = name,
             ContainedWord = containedWord,
         };
         var redisKey = $"{nameof(GetAllCategoriesQuery)}#{page}#{pageSize}";
@@ -47,17 +45,10 @@ public sealed class GetAllCategoriesQueryHandlerTests
                 Description = "Description 2",
             },
         };
-        var pagedCategories = new PagedList<Category>(
-            categories,
-            page,
-            pageSize,
-            categories.Count,
-            false,
-            false
-        );
         _repository
             .Setup(mock => mock.ApplySpecification(It.IsAny<CategoriesSpecification>()))
-            .Returns(categories.AsQueryable);
+            .Returns(categories.BuildMock())
+            .Verifiable();
         _redisCache
             .Setup(mock => mock.GetCachedData<PagedList<CategoryDTO>>(redisKey))
             .ReturnsAsync((PagedList<CategoryDTO>)null!);

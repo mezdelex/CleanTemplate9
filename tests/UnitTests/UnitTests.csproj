@@ -13,6 +13,7 @@
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="fluentassertions" Version="6.12.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="mockqueryable.moq" Version="7.0.3" />
     <PackageReference Include="moq" Version="4.20.72" />
     <PackageReference Include="queryinterceptor.entityframeworkcore" Version="8.0.9" />
     <PackageReference Include="xunit" Version="2.5.3" />
