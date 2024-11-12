@@ -15,6 +15,7 @@ global using Domain.Cache;
 global using Domain.Entities;
 global using static Domain.Extensions.Collections.Collections;
 global using Domain.Persistence;
+global using Domain.Specifications;
 global using FluentAssertions;
 global using FluentValidation;
 global using FluentValidation.Results;
