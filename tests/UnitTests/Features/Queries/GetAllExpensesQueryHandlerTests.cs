@@ -3,6 +3,7 @@ namespace UnitTests.Features.Queries;
 public sealed class GetAllExpensesQueryHandlerTests
 {
     private readonly CancellationToken _cancellationToken;
+    private readonly IMapper _mapper;
     private readonly Mock<IExpensesRepository> _repository;
     private readonly Mock<IRedisCache> _redisCache;
     private readonly GetAllExpensesQueryHandler _handler;
@@ -10,10 +11,11 @@ public sealed class GetAllExpensesQueryHandlerTests
     public GetAllExpensesQueryHandlerTests()
     {
         _cancellationToken = new();
+        _mapper = new MapperConfiguration(c => c.AddProfile<ExpensesProfile>()).CreateMapper();
         _repository = new();
         _redisCache = new();
 
-        _handler = new GetAllExpensesQueryHandler(_repository.Object, _redisCache.Object);
+        _handler = new GetAllExpensesQueryHandler(_repository.Object, _mapper, _redisCache.Object);
     }
 
     [Fact]

@@ -5,18 +5,21 @@ public sealed record PostCategoryCommand(string Name, string Description) : IReq
     public sealed class PostCategoryCommandHandler : IRequestHandler<PostCategoryCommand>
     {
         private readonly IValidator<PostCategoryCommand> _validator;
+        private readonly IMapper _mapper;
         private readonly ICategoriesRepository _repository;
         private readonly IUnitOfWork _uow;
         private readonly IEventBus _eventBus;
 
         public PostCategoryCommandHandler(
             IValidator<PostCategoryCommand> validator,
+            IMapper mapper,
             ICategoriesRepository repository,
             IUnitOfWork uow,
             IEventBus eventBus
         )
         {
             _validator = validator;
+            _mapper = mapper;
             _repository = repository;
             _uow = uow;
             _eventBus = eventBus;
@@ -28,21 +31,12 @@ public sealed record PostCategoryCommand(string Name, string Description) : IReq
             if (!results.IsValid)
                 throw new ValidationException(results.ToString().Replace("\r\n", " "));
 
-            var categoryToPost = new Category
-            {
-                Id = Guid.NewGuid(),
-                Name = request.Name,
-                Description = request.Description,
-            };
+            var categoryToPost = _mapper.Map<Category>(request);
 
             await _repository.PostAsync(categoryToPost, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);
             await _eventBus.PublishAsync(
-                new PostedCategoryEvent(
-                    categoryToPost.Id,
-                    categoryToPost.Name,
-                    categoryToPost.Description
-                ),
+                _mapper.Map<PostedCategoryEvent>(categoryToPost),
                 cancellationToken
             );
         }

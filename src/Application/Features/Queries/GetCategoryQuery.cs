@@ -5,10 +5,12 @@ public sealed record GetCategoryQuery(Guid Id) : IRequest<CategoryDTO>
     public class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, CategoryDTO>
     {
         private readonly ICategoriesRepository _repository;
+        private readonly IMapper _mapper;
 
-        public GetCategoryQueryHandler(ICategoriesRepository repository)
+        public GetCategoryQueryHandler(ICategoriesRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<CategoryDTO> Handle(
@@ -22,12 +24,7 @@ public sealed record GetCategoryQuery(Guid Id) : IRequest<CategoryDTO>
                     cancellationToken
                 ) ?? throw new NotFoundException(request.Id);
 
-            return new CategoryDTO(
-                category.Id,
-                category.Name,
-                category.Description,
-                category.Expenses
-            );
+            return _mapper.Map<CategoryDTO>(category);
         }
     }
 

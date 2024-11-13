@@ -1,8 +1,11 @@
+using Application.Profiles;
+
 namespace UnitTests.Features.Queries;
 
 public sealed class GetAllCategoriesQueryHandlerTests
 {
     private readonly CancellationToken _cancellationToken;
+    private readonly IMapper _mapper;
     private readonly Mock<ICategoriesRepository> _repository;
     private readonly Mock<IRedisCache> _redisCache;
     private readonly GetAllCategoriesQueryHandler _handler;
@@ -10,10 +13,15 @@ public sealed class GetAllCategoriesQueryHandlerTests
     public GetAllCategoriesQueryHandlerTests()
     {
         _cancellationToken = new();
+        _mapper = new MapperConfiguration(c => c.AddProfile<CategoriesProfile>()).CreateMapper();
         _repository = new();
         _redisCache = new();
 
-        _handler = new GetAllCategoriesQueryHandler(_repository.Object, _redisCache.Object);
+        _handler = new GetAllCategoriesQueryHandler(
+            _repository.Object,
+            _mapper,
+            _redisCache.Object
+        );
     }
 
     [Fact]

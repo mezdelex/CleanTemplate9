@@ -9,14 +9,17 @@ public sealed record GetAllCategoriesQuery : BaseRequest, IRequest<PagedList<Cat
         : IRequestHandler<GetAllCategoriesQuery, PagedList<CategoryDTO>>
     {
         private readonly ICategoriesRepository _repository;
+        private readonly IMapper _mapper;
         private readonly IRedisCache _redisCache;
 
         public GetAllCategoriesQueryHandler(
             ICategoriesRepository repository,
+            IMapper mapper,
             IRedisCache redisCache
         )
         {
             _repository = repository;
+            _mapper = mapper;
             _redisCache = redisCache;
         }
 
@@ -39,7 +42,7 @@ public sealed record GetAllCategoriesQuery : BaseRequest, IRequest<PagedList<Cat
                         containedWord: request.ContainedWord
                     )
                 )
-                .Select(c => new CategoryDTO(c.Id, c.Name, c.Description, c.Expenses))
+                .Select(c => _mapper.Map<CategoryDTO>(c))
                 .ToPagedListAsync(request.Page, request.PageSize, cancellationToken);
 
             await _redisCache.SetCachedData<PagedList<CategoryDTO>>(

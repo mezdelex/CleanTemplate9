@@ -10,18 +10,21 @@ public sealed record PostExpenseCommand(
     public sealed class PostExpenseCommandHandler : IRequestHandler<PostExpenseCommand>
     {
         private readonly IValidator<PostExpenseCommand> _validator;
+        private readonly IMapper _mapper;
         private readonly IExpensesRepository _repository;
         private readonly IUnitOfWork _uow;
         private readonly IEventBus _eventBus;
 
         public PostExpenseCommandHandler(
             IValidator<PostExpenseCommand> validator,
+            IMapper mapper,
             IExpensesRepository repository,
             IUnitOfWork uow,
             IEventBus eventBus
         )
         {
             _validator = validator;
+            _mapper = mapper;
             _repository = repository;
             _uow = uow;
             _eventBus = eventBus;
@@ -33,25 +36,12 @@ public sealed record PostExpenseCommand(
             if (!results.IsValid)
                 throw new ValidationException(results.ToString().Replace("\r\n", " "));
 
-            var expenseToPost = new Expense
-            {
-                Id = Guid.NewGuid(),
-                Name = request.Name,
-                Description = request.Description,
-                Value = request.Value,
-                CategoryId = request.CategoryId,
-            };
+            var expenseToPost = _mapper.Map<Expense>(request);
 
             await _repository.PostAsync(expenseToPost, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);
             await _eventBus.PublishAsync(
-                new PostedExpenseEvent(
-                    expenseToPost.Id,
-                    expenseToPost.Name,
-                    expenseToPost.Description,
-                    expenseToPost.Value,
-                    expenseToPost.CategoryId
-                ),
+                _mapper.Map<PostedExpenseEvent>(expenseToPost),
                 cancellationToken
             );
         }

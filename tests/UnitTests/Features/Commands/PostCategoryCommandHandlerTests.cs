@@ -4,6 +4,7 @@ public sealed class PostCategoryCommandHandlerTests
 {
     private readonly CancellationToken _cancellationToken;
     private readonly Mock<IValidator<PostCategoryCommand>> _validator;
+    private readonly IMapper _mapper;
     private readonly Mock<ICategoriesRepository> _repository;
     private readonly Mock<IUnitOfWork> _uow;
     private readonly Mock<IEventBus> _eventBus;
@@ -13,12 +14,14 @@ public sealed class PostCategoryCommandHandlerTests
     {
         _cancellationToken = new();
         _validator = new();
+        _mapper = new MapperConfiguration(c => c.AddProfile<CategoriesProfile>()).CreateMapper();
         _repository = new();
         _uow = new();
         _eventBus = new();
 
         _handler = new PostCategoryCommandHandler(
             _validator.Object,
+            _mapper,
             _repository.Object,
             _uow.Object,
             _eventBus.Object

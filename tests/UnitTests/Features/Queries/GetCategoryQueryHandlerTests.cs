@@ -3,15 +3,17 @@ namespace Application.UnitTests.Categories.GetAsync;
 public sealed class GetCategoryQueryHandlerTests
 {
     private readonly CancellationToken _cancellationToken;
+    private readonly IMapper _mapper;
     private readonly Mock<ICategoriesRepository> _repository;
     private readonly GetCategoryQueryHandler _handler;
 
     public GetCategoryQueryHandlerTests()
     {
         _cancellationToken = new();
+        _mapper = new MapperConfiguration(c => c.AddProfile<CategoriesProfile>()).CreateMapper();
         _repository = new();
 
-        _handler = new GetCategoryQueryHandler(_repository.Object);
+        _handler = new GetCategoryQueryHandler(_repository.Object, _mapper);
     }
 
     [Fact]

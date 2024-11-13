@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -7,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="ardalis.specification" Version="8.0.0" />
+    <PackageReference Include="automapper" Version="13.0.1" />
     <PackageReference Include="fluentvalidation.dependencyinjectionextensions" Version="11.9.2" />
     <PackageReference Include="masstransit" Version="8.2.3" />
     <PackageReference Include="mediatr" Version="12.4.0" />
@@ -16,4 +18,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
+
 </Project>

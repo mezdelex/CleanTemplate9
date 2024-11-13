@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="mediatr" Version="12.4.0" />
-    <PackageReference Include="microsoft.aspnetcore.app" Version="2.2.8" />
     <PackageReference Include="microsoft.extensions.dependencyinjection.abstractions" Version="8.0.1" />
   </ItemGroup>
 

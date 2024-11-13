@@ -5,10 +5,12 @@ public sealed record GetExpenseQuery(Guid Id) : IRequest<ExpenseDTO>
     public sealed class GetExpenseQueryHandler : IRequestHandler<GetExpenseQuery, ExpenseDTO>
     {
         private readonly IExpensesRepository _repository;
+        private readonly IMapper _mapper;
 
-        public GetExpenseQueryHandler(IExpensesRepository repository)
+        public GetExpenseQueryHandler(IExpensesRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<ExpenseDTO> Handle(
@@ -22,13 +24,7 @@ public sealed record GetExpenseQuery(Guid Id) : IRequest<ExpenseDTO>
                     cancellationToken
                 ) ?? throw new NotFoundException(request.Id);
 
-            return new ExpenseDTO(
-                expense.Id,
-                expense.Name,
-                expense.Description,
-                expense.Value,
-                expense.CategoryId
-            );
+            return _mapper.Map<ExpenseDTO>(expense);
         }
     }
 

@@ -3,15 +3,16 @@ namespace Application.UnitTests.Expenses.GetAsync;
 public sealed class GetExpenseQueryHandlerTests
 {
     private readonly CancellationToken _cancellationToken;
+    private readonly IMapper _mapper;
     private readonly Mock<IExpensesRepository> _repository;
     private readonly GetExpenseQueryHandler _handler;
 
     public GetExpenseQueryHandlerTests()
     {
         _cancellationToken = new();
+        _mapper = new MapperConfiguration(c => c.AddProfile<ExpensesProfile>()).CreateMapper();
         _repository = new();
-
-        _handler = new GetExpenseQueryHandler(_repository.Object);
+        _handler = new GetExpenseQueryHandler(_repository.Object, _mapper);
     }
 
     [Fact]

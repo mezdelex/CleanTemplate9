@@ -10,11 +10,17 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
         : IRequestHandler<GetAllExpensesQuery, PagedList<ExpenseDTO>>
     {
         private readonly IExpensesRepository _repository;
+        private readonly IMapper _mapper;
         private readonly IRedisCache _redisCache;
 
-        public GetAllExpensesQueryHandler(IExpensesRepository repository, IRedisCache redisCache)
+        public GetAllExpensesQueryHandler(
+            IExpensesRepository repository,
+            IMapper mapper,
+            IRedisCache redisCache
+        )
         {
             _repository = repository;
+            _mapper = mapper;
             _redisCache = redisCache;
         }
 
@@ -38,7 +44,7 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
                         categoryId: request.CategoryId
                     )
                 )
-                .Select(x => new ExpenseDTO(x.Id, x.Name, x.Description, x.Value, x.CategoryId))
+                .Select(e => _mapper.Map<ExpenseDTO>(e))
                 .ToPagedListAsync(request.Page, request.PageSize, cancellationToken);
 
             await _redisCache.SetCachedData<PagedList<ExpenseDTO>>(

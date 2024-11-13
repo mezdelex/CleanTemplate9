@@ -11,18 +11,21 @@ public sealed record PatchExpenseCommand(
     public sealed class PatchExpenseCommandHandler : IRequestHandler<PatchExpenseCommand>
     {
         private readonly IValidator<PatchExpenseCommand> _validator;
+        private readonly IMapper _mapper;
         private readonly IExpensesRepository _repository;
         private readonly IUnitOfWork _uow;
         private readonly IEventBus _eventBus;
 
         public PatchExpenseCommandHandler(
             IValidator<PatchExpenseCommand> validator,
+            IMapper mapper,
             IExpensesRepository repository,
             IUnitOfWork uow,
             IEventBus eventBus
         )
         {
             _validator = validator;
+            _mapper = mapper;
             _repository = repository;
             _uow = uow;
             _eventBus = eventBus;
@@ -34,25 +37,12 @@ public sealed record PatchExpenseCommand(
             if (!results.IsValid)
                 throw new ValidationException(results.ToString().Replace("\r\n", " "));
 
-            var expenseToPatch = new Expense
-            {
-                Id = request.Id,
-                Name = request.Name,
-                Description = request.Description,
-                Value = request.Value,
-                CategoryId = request.CategoryId,
-            };
+            var expenseToPatch = _mapper.Map<Expense>(request);
 
             await _repository.PatchAsync(expenseToPatch, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);
             await _eventBus.PublishAsync(
-                new PatchedExpenseEvent(
-                    expenseToPatch.Id,
-                    expenseToPatch.Name,
-                    expenseToPatch.Description,
-                    expenseToPatch.Value,
-                    expenseToPatch.CategoryId
-                ),
+                _mapper.Map<PatchedExpenseEvent>(expenseToPatch),
                 cancellationToken
             );
         }
