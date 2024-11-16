@@ -15,6 +15,7 @@ global using Domain.Identity;
 global using Domain.Persistence;
 global using Infrastructure.Cache;
 global using Infrastructure.Contexts;
+global using Infrastructure.Extensions;
 global using Infrastructure.MessageBrokers.RabbitMQ;
 global using Infrastructure.Persistence;
 global using Infrastructure.Repositories;

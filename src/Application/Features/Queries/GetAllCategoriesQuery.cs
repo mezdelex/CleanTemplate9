@@ -28,7 +28,8 @@ public sealed record GetAllCategoriesQuery : BaseRequest, IRequest<PagedList<Cat
             CancellationToken cancellationToken
         )
         {
-            var redisKey = $"{nameof(GetAllCategoriesQuery)}#{request.Page}#{request.PageSize}";
+            var redisKey =
+                $"{nameof(GetAllCategoriesQuery)}#{request.Name}#{request.ContainedWord}#{request.Page}#{request.PageSize}";
             var cachedPagedCategories = await _redisCache.GetCachedData<PagedList<CategoryDTO>>(
                 redisKey
             );

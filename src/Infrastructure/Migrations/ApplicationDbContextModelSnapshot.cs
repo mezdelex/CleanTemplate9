@@ -41,6 +41,32 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("ac525aa3-e305-464f-818f-527eb79c27c2"),
+                            Description = "Groceries category.",
+                            Name = "Groceries"
+                        },
+                        new
+                        {
+                            Id = new Guid("5bf377ce-65da-49ca-a8d5-edd5bb4f4d52"),
+                            Description = "Transportation category.",
+                            Name = "Transportation"
+                        },
+                        new
+                        {
+                            Id = new Guid("870d2c54-6793-493d-8e73-e79e3c4eaaa9"),
+                            Description = "Leisure category.",
+                            Name = "Leisure"
+                        },
+                        new
+                        {
+                            Id = new Guid("4cd3ea1a-5341-4de8-a2f0-55c07b74803c"),
+                            Description = "Utilities category.",
+                            Name = "Utilities"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Expense", b =>
@@ -51,6 +77,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -70,6 +99,62 @@ namespace Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Expenses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("cc72bc1e-3112-45a5-acb2-fa9f9c515d0f"),
+                            CategoryId = new Guid("ac525aa3-e305-464f-818f-527eb79c27c2"),
+                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6451),
+                            Description = "Some chicken bought in the supermarket",
+                            Name = "200g of chicken",
+                            Value = 2.0499999999999998
+                        },
+                        new
+                        {
+                            Id = new Guid("5513d0a7-09b7-4296-95d0-ab958d19264c"),
+                            CategoryId = new Guid("ac525aa3-e305-464f-818f-527eb79c27c2"),
+                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6455),
+                            Description = "Some chicken bought in the supermarket",
+                            Name = "1 can of beans",
+                            Value = 2.0
+                        },
+                        new
+                        {
+                            Id = new Guid("ccef476e-9d6c-4735-801e-8f6dc8686a84"),
+                            CategoryId = new Guid("5bf377ce-65da-49ca-a8d5-edd5bb4f4d52"),
+                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6456),
+                            Description = "Full car tank of 95",
+                            Name = "Full car tank",
+                            Value = 50.0
+                        },
+                        new
+                        {
+                            Id = new Guid("8d785381-f05e-4df1-afa6-3fa75525c8bf"),
+                            CategoryId = new Guid("870d2c54-6793-493d-8e73-e79e3c4eaaa9"),
+                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6458),
+                            Description = "A film I watched",
+                            Name = "Random film",
+                            Value = 5.9000000000000004
+                        },
+                        new
+                        {
+                            Id = new Guid("b0ea3d0b-cfd4-4ec2-b092-a49886fae6ea"),
+                            CategoryId = new Guid("4cd3ea1a-5341-4de8-a2f0-55c07b74803c"),
+                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6460),
+                            Description = "Electricity bill",
+                            Name = "Electricity",
+                            Value = 40.0
+                        },
+                        new
+                        {
+                            Id = new Guid("06e7404d-45d8-4f46-841e-efca5b3dbf21"),
+                            CategoryId = new Guid("4cd3ea1a-5341-4de8-a2f0-55c07b74803c"),
+                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6462),
+                            Description = "Water bill",
+                            Name = "Water",
+                            Value = 15.0
+                        });
                 });
 
             modelBuilder.Entity("Domain.Identity.ApplicationUser", b =>

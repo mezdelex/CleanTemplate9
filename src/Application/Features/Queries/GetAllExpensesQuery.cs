@@ -4,6 +4,8 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
 {
     public string? Name { get; set; }
     public string? ContainedWord { get; set; }
+    public DateTime? MinDate { get; set; }
+    public DateTime? MaxDate { get; set; }
     public Guid? CategoryId { get; set; }
 
     public sealed class GetAllExpensesQueryHandler
@@ -29,7 +31,8 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
             CancellationToken cancellationToken
         )
         {
-            var redisKey = $"{nameof(GetAllExpensesQuery)}#{request.Page}#{request.PageSize}";
+            var redisKey =
+                $"{nameof(GetAllExpensesQuery)}#{request.Name}#{request.ContainedWord}#{request.MinDate}#{request.MaxDate}#{request.CategoryId}#{request.Page}#{request.PageSize}";
             var cachedPagedExpenses = await _redisCache.GetCachedData<PagedList<ExpenseDTO>>(
                 redisKey
             );
@@ -41,6 +44,8 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
                     new ExpensesSpecification(
                         name: request.Name,
                         containedWord: request.ContainedWord,
+                        minDate: request.MinDate,
+                        maxDate: request.MaxDate,
                         categoryId: request.CategoryId
                     )
                 )

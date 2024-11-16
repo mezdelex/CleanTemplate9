@@ -28,16 +28,18 @@ public sealed class GetAllCategoriesQueryHandlerTests
     public async Task GetAllCategoriesQueryHandler_ShouldReturnPagedListOfRequestedCategoriesAsListOfCategoryDTOAndMetadata()
     {
         // Arrange
+        var name = string.Empty;
         var containedWord = "am";
         var page = 1;
         var pageSize = 2;
         var getAllCategoriesQuery = new GetAllCategoriesQuery
         {
+            Name = name,
+            ContainedWord = containedWord,
             Page = page,
             PageSize = pageSize,
-            ContainedWord = containedWord,
         };
-        var redisKey = $"{nameof(GetAllCategoriesQuery)}#{page}#{pageSize}";
+        var redisKey = $"{nameof(GetAllCategoriesQuery)}#{name}#{containedWord}#{page}#{pageSize}";
         var categories = new List<Category>
         {
             new()

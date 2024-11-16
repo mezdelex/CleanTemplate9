@@ -6,6 +6,8 @@ public sealed class ExpensesSpecification : Specification<Expense>
         Guid? id = null,
         string? name = null,
         string? containedWord = null,
+        DateTime? minDate = null,
+        DateTime? maxDate = null,
         Guid? categoryId = null
     )
     {
@@ -17,13 +19,23 @@ public sealed class ExpensesSpecification : Specification<Expense>
         if (!string.IsNullOrWhiteSpace(name))
             Query.Where(x => x.Name.Equals(name));
 
-        if (categoryId != null)
-            Query.Where(x => x.CategoryId.Equals(categoryId));
-
         if (!string.IsNullOrWhiteSpace(containedWord))
             Query.Where(x =>
                 x.Name.Contains(containedWord) || x.Description.Contains(containedWord)
             );
+
+        if (minDate.HasValue)
+            Query.Where(x =>
+                x.Date.CompareTo(DateTimeConversors.NormalizeToUtc(minDate.Value)) >= 0
+            );
+
+        if (maxDate.HasValue)
+            Query.Where(x =>
+                x.Date.CompareTo(DateTimeConversors.NormalizeToUtc(maxDate.Value)) <= 0
+            );
+
+        if (categoryId != null)
+            Query.Where(x => x.CategoryId.Equals(categoryId));
 
         Query.OrderBy(x => x.CategoryId).ThenBy(x => x.Name);
     }

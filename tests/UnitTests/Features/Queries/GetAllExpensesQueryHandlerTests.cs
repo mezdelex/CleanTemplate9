@@ -22,16 +22,21 @@ public sealed class GetAllExpensesQueryHandlerTests
     public async Task GetAllExpensesQueryHandler_ShouldReturnPagedListOfRequestedExpensesAsListOfExpenseDTOAndMetadata()
     {
         // Arrange
+        var name = string.Empty;
         var containedWord = "am";
+        var categoryId = Guid.NewGuid();
         var page = 1;
         var pageSize = 2;
         var getAllExpensesQuery = new GetAllExpensesQuery
         {
+            Name = name,
+            ContainedWord = containedWord,
+            CategoryId = categoryId,
             Page = page,
             PageSize = pageSize,
-            ContainedWord = containedWord,
         };
-        var redisKey = $"{nameof(GetAllExpensesQuery)}#{page}#{pageSize}";
+        var redisKey =
+            $"{nameof(GetAllExpensesQuery)}#{name}#{containedWord}#{null}#{null}#{categoryId}#{page}#{pageSize}";
         var expenses = new List<Expense>
         {
             new()
@@ -40,6 +45,8 @@ public sealed class GetAllExpensesQueryHandlerTests
                 Name = "Name 1",
                 Description = "Description 1",
                 Value = 1,
+                Date = DateTime.UtcNow,
+                CategoryId = categoryId,
             },
             new()
             {
@@ -47,6 +54,8 @@ public sealed class GetAllExpensesQueryHandlerTests
                 Name = "Name 2",
                 Description = "Description 2",
                 Value = 2,
+                Date = DateTime.UtcNow,
+                CategoryId = categoryId,
             },
         };
         _repository
@@ -75,9 +84,13 @@ public sealed class GetAllExpensesQueryHandlerTests
         result.Items[0].Name.Should().Be(expenses[0].Name);
         result.Items[0].Description.Should().Be(expenses[0].Description);
         result.Items[0].Value.Should().Be(expenses[0].Value);
+        result.Items[0].Date.Should().Be(expenses[0].Date);
+        result.Items[0].CategoryId.Should().Be(expenses[0].CategoryId);
         result.Items[1].Id.Should().Be(expenses[1].Id);
         result.Items[1].Name.Should().Be(expenses[1].Name);
         result.Items[1].Value.Should().Be(expenses[1].Value);
+        result.Items[1].Date.Should().Be(expenses[1].Date);
+        result.Items[1].CategoryId.Should().Be(expenses[1].CategoryId);
         result.TotalCount.Should().Be(expenses.Count);
         result.Page.Should().Be(page);
         result.PageSize.Should().Be(pageSize);

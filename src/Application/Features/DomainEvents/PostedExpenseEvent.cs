@@ -5,6 +5,7 @@ public record PostedExpenseEvent(
     string Name,
     string Description,
     double Value,
+    DateTime Date,
     Guid CategoryId
 )
 {

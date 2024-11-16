@@ -5,6 +5,7 @@ public sealed record PatchedExpenseEvent(
     string Name,
     string Description,
     double Value,
+    DateTime Date,
     Guid CategoryId
 )
 {

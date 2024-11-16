@@ -18,6 +18,8 @@ public static class ExpensesEndpoints
     public static async Task<IResult> GetAllExpensesQueryAsync(
         [FromQuery] string? name,
         [FromQuery] string? containedWord,
+        [FromQuery] DateTime? minDate,
+        [FromQuery] DateTime? maxDate,
         [FromQuery] Guid? categoryId,
         [FromQuery] int page,
         [FromQuery] int pageSize,
@@ -32,6 +34,8 @@ public static class ExpensesEndpoints
                     {
                         Name = name,
                         ContainedWord = containedWord,
+                        MinDate = minDate,
+                        MaxDate = maxDate,
                         CategoryId = categoryId,
                         Page = page,
                         PageSize = pageSize,
