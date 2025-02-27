@@ -50,62 +50,43 @@ public sealed record PatchExpenseCommand(
 
     public sealed class PatchExpenseCommandValidator : AbstractValidator<PatchExpenseCommand>
     {
-        private readonly int NameMaxLength = 30;
-        private readonly int DescriptionMaxLength = 256;
-
         public PatchExpenseCommandValidator()
         {
             RuleFor(c => c.Id)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(nameof(PatchExpenseCommand.Id))
-                )
-                .Must(id => id.GetType() == typeof(Guid))
-                .WithMessage(
-                    GenericValidationMessages.ShouldBeAGuid(nameof(PatchExpenseCommand.Id))
-                );
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)))
+                .Must(id => id.GetType().Equals(typeof(Guid)))
+                .WithMessage(GenericValidationMessages.ShouldBeAGuid(nameof(Id)));
 
             RuleFor(c => c.Name)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(nameof(PatchExpenseCommand.Name))
-                )
-                .MaximumLength(NameMaxLength)
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Name)))
+                .MaximumLength(ExpenseConstraints.NameMaxLength)
                 .WithMessage(
                     GenericValidationMessages.ShouldNotBeLongerThan(
-                        nameof(PatchExpenseCommand.Name),
-                        NameMaxLength
+                        nameof(Name),
+                        ExpenseConstraints.NameMaxLength
                     )
                 );
 
             RuleFor(c => c.Description)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(
-                        nameof(PatchExpenseCommand.Description)
-                    )
-                )
-                .MaximumLength(DescriptionMaxLength)
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Description)))
+                .MaximumLength(ExpenseConstraints.DescriptionMaxLength)
                 .WithMessage(
                     GenericValidationMessages.ShouldNotBeLongerThan(
-                        nameof(PatchExpenseCommand.Description),
-                        DescriptionMaxLength
+                        nameof(Description),
+                        ExpenseConstraints.DescriptionMaxLength
                     )
                 );
 
             RuleFor(c => c.Value)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(nameof(PatchExpenseCommand.Value))
-                );
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Value)));
 
             RuleFor(c => c.CategoryId)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(
-                        nameof(PatchExpenseCommand.CategoryId)
-                    )
-                );
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(CategoryId)));
         }
     }
 }

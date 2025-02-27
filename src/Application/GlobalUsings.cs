@@ -10,7 +10,7 @@ global using AutoMapper;
 global using Domain.Cache;
 global using Domain.Entities;
 global using Domain.Exceptions;
-global using static Domain.Extensions.Collections.Collections;
+global using static Domain.Extensions.Collections;
 global using Domain.Persistence;
 global using Domain.Specifications;
 global using FluentValidation;

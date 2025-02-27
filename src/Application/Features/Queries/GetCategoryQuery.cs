@@ -34,7 +34,7 @@ public sealed record GetCategoryQuery(Guid Id) : IRequest<CategoryDTO>
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty("Id"));
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)));
         }
     }
 }

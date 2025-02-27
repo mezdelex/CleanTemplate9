@@ -26,7 +26,7 @@ public record DeleteExpenseCommand(Guid Id) : IRequest
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty("Id"));
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)));
         }
     }
 }

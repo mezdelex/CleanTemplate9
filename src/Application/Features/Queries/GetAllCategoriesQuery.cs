@@ -46,7 +46,7 @@ public sealed record GetAllCategoriesQuery : BaseRequest, IRequest<PagedList<Cat
                 .Select(c => _mapper.Map<CategoryDTO>(c))
                 .ToPagedListAsync(request.Page, request.PageSize, cancellationToken);
 
-            await _redisCache.SetCachedData<PagedList<CategoryDTO>>(
+            await _redisCache.SetCachedData(
                 redisKey,
                 pagedCategories,
                 DateTimeOffset.Now.AddMinutes(5)

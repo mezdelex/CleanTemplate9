@@ -1,6 +1,6 @@
-# .NET 8 Clean Architecture Template
+# .NET9 Clean Architecture Template
 
-.NET 8 Clean Architecture + DDD + CQRS + Specifications + AutoMapper + Domain Events + Testing + Identity + Redis
+.NET9 Clean Architecture + DDD + CQRS + Specifications + AutoMapper + Domain Events + Testing + Identity + Redis
 
 ## Docker
 

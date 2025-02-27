@@ -44,46 +44,33 @@ public sealed record PatchCategoryCommand(Guid Id, string Name, string Descripti
 
     public sealed class PatchCategoryCommandValidator : AbstractValidator<PatchCategoryCommand>
     {
-        private readonly int NameMaxLength = 30;
-        private readonly int DescriptionMaxLength = 256;
-
         public PatchCategoryCommandValidator()
         {
             RuleFor(c => c.Id)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(nameof(PatchCategoryCommand.Id))
-                )
-                .Must(id => id.GetType() == typeof(Guid))
-                .WithMessage(
-                    GenericValidationMessages.ShouldBeAGuid(nameof(PatchCategoryCommand.Id))
-                );
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)))
+                .Must(id => id.GetType().Equals(typeof(Guid)))
+                .WithMessage(GenericValidationMessages.ShouldBeAGuid(nameof(Id)));
 
             RuleFor(c => c.Name)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(nameof(PatchCategoryCommand.Name))
-                )
-                .MaximumLength(NameMaxLength)
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Name)))
+                .MaximumLength(CategoryConstraints.NameMaxLength)
                 .WithMessage(
                     GenericValidationMessages.ShouldNotBeLongerThan(
-                        nameof(PatchCategoryCommand.Name),
-                        NameMaxLength
+                        nameof(Name),
+                        CategoryConstraints.NameMaxLength
                     )
                 );
 
             RuleFor(c => c.Description)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(
-                        nameof(PatchCategoryCommand.Description)
-                    )
-                )
-                .MaximumLength(DescriptionMaxLength)
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Description)))
+                .MaximumLength(CategoryConstraints.DescriptionMaxLength)
                 .WithMessage(
                     GenericValidationMessages.ShouldNotBeLongerThan(
-                        nameof(PatchCategoryCommand.Description),
-                        DescriptionMaxLength
+                        nameof(Description),
+                        CategoryConstraints.DescriptionMaxLength
                     )
                 );
         }

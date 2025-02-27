@@ -34,7 +34,7 @@ public sealed record GetExpenseQuery(Guid Id) : IRequest<ExpenseDTO>
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty("Id"));
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)));
         }
     }
 }

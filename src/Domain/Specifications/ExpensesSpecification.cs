@@ -24,6 +24,7 @@ public sealed class ExpensesSpecification : Specification<Expense>
                 x.Name.Contains(containedWord) || x.Description.Contains(containedWord)
             );
 
+        /*TODO: add TimeZoneOffset by passing the TimeZone in the request (recommended method)*/
         if (minDate.HasValue)
             Query.Where(x =>
                 x.Date.CompareTo(DateTimeConversors.NormalizeToUtc(minDate.Value)) >= 0
@@ -37,6 +38,6 @@ public sealed class ExpensesSpecification : Specification<Expense>
         if (categoryId != null)
             Query.Where(x => x.CategoryId.Equals(categoryId));
 
-        Query.OrderBy(x => x.CategoryId).ThenBy(x => x.Name);
+        Query.OrderBy(x => x.CategoryId).ThenBy(x => x.Name).ThenBy(x => x.Id);
     }
 }

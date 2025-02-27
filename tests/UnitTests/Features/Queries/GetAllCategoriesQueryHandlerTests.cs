@@ -1,5 +1,3 @@
-using Application.Profiles;
-
 namespace UnitTests.Features.Queries;
 
 public sealed class GetAllCategoriesQueryHandlerTests

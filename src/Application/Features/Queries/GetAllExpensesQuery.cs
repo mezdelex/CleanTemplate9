@@ -52,7 +52,7 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
                 .Select(e => _mapper.Map<ExpenseDTO>(e))
                 .ToPagedListAsync(request.Page, request.PageSize, cancellationToken);
 
-            await _redisCache.SetCachedData<PagedList<ExpenseDTO>>(
+            await _redisCache.SetCachedData(
                 redisKey,
                 pagedExpenses,
                 DateTimeOffset.Now.AddMinutes(5)

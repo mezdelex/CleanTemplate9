@@ -21,6 +21,6 @@ public sealed class CategoriesSpecification : Specification<Category>
                 x.Name.Contains(containedWord) || x.Description.Contains(containedWord)
             );
 
-        Query.Include(x => x.Expenses).OrderBy(x => x.Name);
+        Query.Include(x => x.Expenses).OrderBy(x => x.Name).ThenBy(x => x.Id);
     }
 }

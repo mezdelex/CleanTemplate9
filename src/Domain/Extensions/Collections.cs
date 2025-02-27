@@ -1,4 +1,4 @@
-namespace Domain.Extensions.Collections;
+namespace Domain.Extensions;
 
 public static class Collections
 {

@@ -44,36 +44,27 @@ public sealed record PostCategoryCommand(string Name, string Description) : IReq
 
     public sealed class PostCategoryCommandValidator : AbstractValidator<PostCategoryCommand>
     {
-        private readonly int NameMaxLength = 30;
-        private readonly int DescriptionMaxLength = 256;
-
         public PostCategoryCommandValidator()
         {
             RuleFor(c => c.Name)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(nameof(PostCategoryCommand.Name))
-                )
-                .MaximumLength(NameMaxLength)
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Name)))
+                .MaximumLength(CategoryConstraints.NameMaxLength)
                 .WithMessage(
                     GenericValidationMessages.ShouldNotBeLongerThan(
-                        nameof(PostCategoryCommand.Name),
-                        NameMaxLength
+                        nameof(Name),
+                        CategoryConstraints.NameMaxLength
                     )
                 );
 
             RuleFor(c => c.Description)
                 .NotEmpty()
-                .WithMessage(
-                    GenericValidationMessages.ShouldNotBeEmpty(
-                        nameof(PostCategoryCommand.Description)
-                    )
-                )
-                .MaximumLength(DescriptionMaxLength)
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Description)))
+                .MaximumLength(CategoryConstraints.DescriptionMaxLength)
                 .WithMessage(
                     GenericValidationMessages.ShouldNotBeLongerThan(
-                        nameof(PostCategoryCommand.Description),
-                        DescriptionMaxLength
+                        nameof(Description),
+                        CategoryConstraints.DescriptionMaxLength
                     )
                 );
         }
