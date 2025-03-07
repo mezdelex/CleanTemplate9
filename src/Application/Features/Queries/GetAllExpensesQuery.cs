@@ -6,25 +6,18 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
     public string? ContainedWord { get; set; }
     public DateTime? MinDate { get; set; }
     public DateTime? MaxDate { get; set; }
-    public Guid? CategoryId { get; set; }
+    public string? CategoryId { get; set; }
+    public string? ApplicationUserId { get; set; }
 
-    public sealed class GetAllExpensesQueryHandler
-        : IRequestHandler<GetAllExpensesQuery, PagedList<ExpenseDTO>>
+    public sealed class GetAllExpensesQueryHandler(
+        IExpensesRepository repository,
+        IMapper mapper,
+        IRedisCache redisCache
+    ) : IRequestHandler<GetAllExpensesQuery, PagedList<ExpenseDTO>>
     {
-        private readonly IExpensesRepository _repository;
-        private readonly IMapper _mapper;
-        private readonly IRedisCache _redisCache;
-
-        public GetAllExpensesQueryHandler(
-            IExpensesRepository repository,
-            IMapper mapper,
-            IRedisCache redisCache
-        )
-        {
-            _repository = repository;
-            _mapper = mapper;
-            _redisCache = redisCache;
-        }
+        private readonly IExpensesRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
+        private readonly IRedisCache _redisCache = redisCache;
 
         public async Task<PagedList<ExpenseDTO>> Handle(
             GetAllExpensesQuery request,
@@ -32,7 +25,7 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
         )
         {
             var redisKey =
-                $"{nameof(GetAllExpensesQuery)}#{request.Name}#{request.ContainedWord}#{request.MinDate}#{request.MaxDate}#{request.CategoryId}#{request.Page}#{request.PageSize}";
+                $"{nameof(GetAllExpensesQuery)}#{request.Name}#{request.ContainedWord}#{request.MinDate}#{request.MaxDate}#{request.CategoryId}#{request.ApplicationUserId}#{request.Page}#{request.PageSize}";
             var cachedPagedExpenses = await _redisCache.GetCachedData<PagedList<ExpenseDTO>>(
                 redisKey
             );
@@ -46,7 +39,8 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
                         containedWord: request.ContainedWord,
                         minDate: request.MinDate,
                         maxDate: request.MaxDate,
-                        categoryId: request.CategoryId
+                        categoryId: request.CategoryId,
+                        applicationUserId: request.ApplicationUserId
                     )
                 )
                 .Select(e => _mapper.Map<ExpenseDTO>(e))
@@ -59,6 +53,32 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
             );
 
             return pagedExpenses;
+        }
+    }
+
+    public class GetAllExpensesQueryValidator : AbstractValidator<GetAllExpensesQuery>
+    {
+        public GetAllExpensesQueryValidator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(Name),
+                        ExpenseConstraints.NameMaxLength
+                    )
+                )
+                .When(x => x.Name is not null);
+
+            RuleFor(x => x.ContainedWord)
+                .NotEmpty()
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(ContainedWord),
+                        ExpenseConstraints.DescriptionMaxLength
+                    )
+                )
+                .When(x => x.Name is not null);
         }
     }
 }

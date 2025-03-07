@@ -1,17 +1,12 @@
 namespace Application.Features.Queries;
 
-public sealed record GetCategoryQuery(Guid Id) : IRequest<CategoryDTO>
+public sealed record GetCategoryQuery(string Id) : IRequest<CategoryDTO>
 {
-    public class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, CategoryDTO>
+    public sealed class GetCategoryQueryHandler(ICategoriesRepository repository, IMapper mapper)
+        : IRequestHandler<GetCategoryQuery, CategoryDTO>
     {
-        private readonly ICategoriesRepository _repository;
-        private readonly IMapper _mapper;
-
-        public GetCategoryQueryHandler(ICategoriesRepository repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        private readonly ICategoriesRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<CategoryDTO> Handle(
             GetCategoryQuery request,
@@ -34,7 +29,14 @@ public sealed record GetCategoryQuery(Guid Id) : IRequest<CategoryDTO>
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)));
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)))
+                .MaximumLength(CategoryConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(Id),
+                        CategoryConstraints.IdMaxLength
+                    )
+                );
         }
     }
 }

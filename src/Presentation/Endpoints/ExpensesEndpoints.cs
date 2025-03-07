@@ -6,17 +6,19 @@ public static class ExpensesEndpoints
 
     public static void MapExpensesEndpoints(this IEndpointRouteBuilder builder)
     {
-        var group = builder.MapGroup("api/expenses/");
+        var group = builder.MapGroup(MapGroups.Expenses);
 
-        group.MapGet(string.Empty, GetAllExpensesQueryAsync).RequireAuthorization();
-        group.MapGet(Patterns.IdAsGuidPattern, GetExpenseQueryAsync).RequireAuthorization();
+        group.MapPost(Patterns.AllPattern, GetAllExpensesQueryAsync).RequireAuthorization();
+        group.MapGet(Patterns.IdPattern, GetExpenseQueryAsync).RequireAuthorization();
         group.MapPatch(string.Empty, PatchExpenseCommandAsync).RequireAuthorization();
         group.MapPost(string.Empty, PostExpenseCommandAsync).RequireAuthorization();
-        group.MapDelete(Patterns.IdAsGuidPattern, DeleteExpenseCommandAsync).RequireAuthorization();
+        group
+            .MapDelete(Patterns.IdPattern, DeleteExpenseCommandAsync)
+            .RequireAuthorization();
     }
 
     public static async Task<IResult> GetAllExpensesQueryAsync(
-        [FromQuery] GetAllExpensesQuery query,
+        [FromBody] GetAllExpensesQuery query,
         ISender sender
     )
     {
@@ -32,14 +34,11 @@ public static class ExpensesEndpoints
         }
     }
 
-    public static async Task<IResult> GetExpenseQueryAsync(
-        [FromRoute] GetExpenseQuery query,
-        ISender sender
-    )
+    public static async Task<IResult> GetExpenseQueryAsync([FromRoute] string id, ISender sender)
     {
         try
         {
-            return Results.Ok(await sender.Send(query));
+            return Results.Ok(await sender.Send(new GetExpenseQuery(id)));
         }
         catch (Exception e)
         {
@@ -88,13 +87,13 @@ public static class ExpensesEndpoints
     }
 
     public static async Task<IResult> DeleteExpenseCommandAsync(
-        [FromRoute] DeleteExpenseCommand command,
+        [FromRoute] string id,
         ISender sender
     )
     {
         try
         {
-            await sender.Send(command);
+            await sender.Send(new DeleteExpenseCommand(id));
 
             return Results.NoContent();
         }

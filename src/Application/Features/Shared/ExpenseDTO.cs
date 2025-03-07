@@ -1,10 +1,11 @@
 namespace Application.Features.Shared;
 
-public record ExpenseDTO(
-    Guid Id,
+public sealed record ExpenseDTO(
+    string Id,
     string Name,
     string Description,
     double Value,
     DateTime Date,
-    Guid CategoryId
+    string CategoryId,
+    string ApplicationUserId
 );

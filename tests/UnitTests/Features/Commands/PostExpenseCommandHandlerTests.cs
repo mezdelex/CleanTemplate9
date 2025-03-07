@@ -1,4 +1,4 @@
-namespace Application.UnitTests.Expenses.PostAsync;
+namespace UnitTests.Features.Commands;
 
 public sealed class PostExpenseCommandHandlerTests
 {
@@ -36,7 +36,8 @@ public sealed class PostExpenseCommandHandlerTests
             "Expense 1 name",
             "Expense 1 description",
             1,
-            new Guid()
+            new Guid().ToString(),
+            new Guid().ToString()
         );
         _validator
             .Setup(mock => mock.ValidateAsync(postExpenseCommand, _cancellationToken))

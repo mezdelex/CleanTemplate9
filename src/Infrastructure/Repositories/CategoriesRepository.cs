@@ -1,7 +1,6 @@
 namespace Infrastructure.Repositories;
 
-public class CategoriesRepository : BaseRepository<Category>, ICategoriesRepository
-{
-    public CategoriesRepository(ApplicationDbContext context, ISpecificationEvaluator evaluator)
-        : base(context, evaluator) { }
-}
+public class CategoriesRepository(ApplicationDbContext context, ISpecificationEvaluator evaluator)
+    : BaseRepository<IBaseEntity, Category>(context, evaluator),
+        ICategoriesRepository
+{ }

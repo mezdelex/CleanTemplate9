@@ -1,10 +1,9 @@
 namespace Infrastructure.Contexts;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext<ApplicationUser>(options),
+        IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options) { }
-
     public DbSet<Category> Categories { get; set; } = default!;
     public DbSet<Expense> Expenses { get; set; } = default!;
 

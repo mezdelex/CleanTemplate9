@@ -3,17 +3,18 @@ namespace Domain.Specifications;
 public sealed class ExpensesSpecification : Specification<Expense>
 {
     public ExpensesSpecification(
-        Guid? id = null,
+        string? id = null,
         string? name = null,
         string? containedWord = null,
         DateTime? minDate = null,
         DateTime? maxDate = null,
-        Guid? categoryId = null
+        string? categoryId = null,
+        string? applicationUserId = null
     )
     {
         Query.AsNoTracking();
 
-        if (id != null)
+        if (!string.IsNullOrWhiteSpace(id))
             Query.Where(x => x.Id.Equals(id));
 
         if (!string.IsNullOrWhiteSpace(name))
@@ -35,8 +36,11 @@ public sealed class ExpensesSpecification : Specification<Expense>
                 x.Date.CompareTo(DateTimeConversors.NormalizeToUtc(maxDate.Value)) <= 0
             );
 
-        if (categoryId != null)
+        if (!string.IsNullOrWhiteSpace(categoryId))
             Query.Where(x => x.CategoryId.Equals(categoryId));
+
+        if (!string.IsNullOrWhiteSpace(applicationUserId))
+            Query.Where(x => x.ApplicationUserId.Equals(applicationUserId));
 
         Query.OrderBy(x => x.CategoryId).ThenBy(x => x.Name).ThenBy(x => x.Id);
     }

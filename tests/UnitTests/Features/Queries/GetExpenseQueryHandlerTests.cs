@@ -1,4 +1,4 @@
-namespace Application.UnitTests.Expenses.GetAsync;
+namespace UnitTests.Features.Queries;
 
 public sealed class GetExpenseQueryHandlerTests
 {
@@ -19,7 +19,7 @@ public sealed class GetExpenseQueryHandlerTests
     public async Task Handle_ValidIdGetExpenseQuery_ShouldReturnRequestedExpenseAsExpenseDTOAsync()
     {
         // Arrange
-        var guid = Guid.NewGuid();
+        var guid = Guid.NewGuid().ToString();
         var getExpenseQuery = new GetExpenseQuery(guid);
         var category = new Expense
         {

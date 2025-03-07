@@ -1,8 +1,8 @@
 namespace Application.Features.Shared;
 
-public sealed record CategoryDTO(
+public sealed record ApplicationUserDTO(
     string Id,
-    string Name,
-    string Description,
+    string UserName,
+    string Email,
     List<ExpenseDTO> Expenses
 );

@@ -1,17 +1,14 @@
 namespace Application.Features.Commands;
 
-public sealed record DeleteCategoryCommand(Guid Id) : IRequest
+public sealed record DeleteCategoryCommand(string Id) : IRequest
 {
-    public sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand>
+    public sealed class DeleteCategoryCommandHandler(
+        ICategoriesRepository repository,
+        IUnitOfWork uow
+    ) : IRequestHandler<DeleteCategoryCommand>
     {
-        private readonly ICategoriesRepository _repository;
-        private readonly IUnitOfWork _uow;
-
-        public DeleteCategoryCommandHandler(ICategoriesRepository repository, IUnitOfWork uow)
-        {
-            _repository = repository;
-            _uow = uow;
-        }
+        private readonly ICategoriesRepository _repository = repository;
+        private readonly IUnitOfWork _uow = uow;
 
         public async Task Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -26,7 +23,14 @@ public sealed record DeleteCategoryCommand(Guid Id) : IRequest
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)));
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)))
+                .MaximumLength(CategoryConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(Id),
+                        CategoryConstraints.IdMaxLength
+                    )
+                );
         }
     }
 }

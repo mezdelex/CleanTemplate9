@@ -1,15 +1,11 @@
 namespace Application.Features.DomainEvents;
 
-public sealed record PostedCategoryEvent(Guid Id, string Name, string Description)
+public sealed record PostedCategoryEvent(string Id, string Name, string Description)
 {
-    public sealed class PostedCategoryEventConsumer : IConsumer<PostedCategoryEvent>
+    public sealed class PostedCategoryEventConsumer(ILogger<PostedCategoryEventConsumer> logger)
+        : IConsumer<PostedCategoryEvent>
     {
-        private readonly ILogger<PostedCategoryEventConsumer> _logger;
-
-        public PostedCategoryEventConsumer(ILogger<PostedCategoryEventConsumer> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<PostedCategoryEventConsumer> _logger = logger;
 
         public Task Consume(ConsumeContext<PostedCategoryEvent> context)
         {

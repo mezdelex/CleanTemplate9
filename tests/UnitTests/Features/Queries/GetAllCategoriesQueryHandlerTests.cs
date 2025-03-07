@@ -42,13 +42,13 @@ public sealed class GetAllCategoriesQueryHandlerTests
         {
             new()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
                 Name = "Name 1",
                 Description = "Description 1",
             },
             new()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
                 Name = "Name 2",
                 Description = "Description 2",
             },

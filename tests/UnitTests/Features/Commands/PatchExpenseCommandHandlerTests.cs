@@ -1,4 +1,4 @@
-namespace Application.UnitTests.Expenses.PostAsync;
+namespace UnitTests.Features.Commands;
 
 public sealed class PatchExpenseCommandHandlerTests
 {
@@ -33,11 +33,12 @@ public sealed class PatchExpenseCommandHandlerTests
     {
         // Arrange
         var patchExpenseCommand = new PatchExpenseCommand(
-            Guid.NewGuid(),
+            Guid.NewGuid().ToString(),
             "Expense 1 name",
             "Expense 1 description",
             1,
-            new Guid()
+            new Guid().ToString(),
+            new Guid().ToString()
         );
         _validator
             .Setup(mock => mock.ValidateAsync(It.IsAny<PatchExpenseCommand>(), _cancellationToken))

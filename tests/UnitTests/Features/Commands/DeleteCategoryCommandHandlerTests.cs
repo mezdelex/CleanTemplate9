@@ -1,4 +1,4 @@
-namespace Application.UnitTests.Categories.PostAsync;
+namespace UnitTests.Features.Commands;
 
 public sealed class DeleteCategoryCommandHandlerTests
 {
@@ -20,9 +20,9 @@ public sealed class DeleteCategoryCommandHandlerTests
     public async Task DeleteCategoryCommandHandler_ShouldDeleteCategory()
     {
         // Arrange
-        var deleteCategoryCommand = new DeleteCategoryCommand(Guid.NewGuid());
+        var deleteCategoryCommand = new DeleteCategoryCommand(Guid.NewGuid().ToString());
         _repository
-            .Setup(mock => mock.DeleteAsync(It.IsAny<Guid>(), _cancellationToken))
+            .Setup(mock => mock.DeleteAsync(It.IsAny<string>(), _cancellationToken))
             .Verifiable();
         _uow.Setup(mock => mock.SaveChangesAsync(_cancellationToken)).Verifiable();
 
@@ -31,7 +31,7 @@ public sealed class DeleteCategoryCommandHandlerTests
 
         // Assert
         _repository.Verify(
-            mock => mock.DeleteAsync(It.IsAny<Guid>(), _cancellationToken),
+            mock => mock.DeleteAsync(It.IsAny<string>(), _cancellationToken),
             Times.Once
         );
         _uow.Verify(mock => mock.SaveChangesAsync(_cancellationToken), Times.Once);

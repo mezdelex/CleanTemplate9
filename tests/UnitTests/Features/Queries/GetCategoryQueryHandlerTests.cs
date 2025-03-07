@@ -1,4 +1,4 @@
-namespace Application.UnitTests.Categories.GetAsync;
+namespace UnitTests.Features.Queries;
 
 public sealed class GetCategoryQueryHandlerTests
 {
@@ -20,7 +20,7 @@ public sealed class GetCategoryQueryHandlerTests
     public async Task Handle_ValidIdGetCategoryQuery_ShouldReturnRequestedCategoryAsCategoryDTOAsync()
     {
         // Arrange
-        var guid = Guid.NewGuid();
+        var guid = Guid.NewGuid().ToString();
         var getCategoryQuery = new GetCategoryQuery(guid);
         var category = new Category
         {

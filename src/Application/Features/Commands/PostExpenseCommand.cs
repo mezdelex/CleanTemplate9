@@ -4,31 +4,23 @@ public sealed record PostExpenseCommand(
     string Name,
     string Description,
     double Value,
-    Guid CategoryId
+    string CategoryId,
+    string ApplicationUserId
 ) : IRequest
 {
-    public sealed class PostExpenseCommandHandler : IRequestHandler<PostExpenseCommand>
+    public sealed class PostExpenseCommandHandler(
+        IValidator<PostExpenseCommand> validator,
+        IMapper mapper,
+        IExpensesRepository repository,
+        IUnitOfWork uow,
+        IEventBus eventBus
+    ) : IRequestHandler<PostExpenseCommand>
     {
-        private readonly IValidator<PostExpenseCommand> _validator;
-        private readonly IMapper _mapper;
-        private readonly IExpensesRepository _repository;
-        private readonly IUnitOfWork _uow;
-        private readonly IEventBus _eventBus;
-
-        public PostExpenseCommandHandler(
-            IValidator<PostExpenseCommand> validator,
-            IMapper mapper,
-            IExpensesRepository repository,
-            IUnitOfWork uow,
-            IEventBus eventBus
-        )
-        {
-            _validator = validator;
-            _mapper = mapper;
-            _repository = repository;
-            _uow = uow;
-            _eventBus = eventBus;
-        }
+        private readonly IValidator<PostExpenseCommand> _validator = validator;
+        private readonly IMapper _mapper = mapper;
+        private readonly IExpensesRepository _repository = repository;
+        private readonly IUnitOfWork _uow = uow;
+        private readonly IEventBus _eventBus = eventBus;
 
         public async Task Handle(PostExpenseCommand request, CancellationToken cancellationToken)
         {
@@ -80,8 +72,24 @@ public sealed record PostExpenseCommand(
             RuleFor(c => c.CategoryId)
                 .NotEmpty()
                 .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(CategoryId)))
-                .Must(x => x.GetType().Equals(typeof(Guid)))
-                .WithMessage(GenericValidationMessages.ShouldBeAGuid(nameof(CategoryId)));
+                .MaximumLength(CategoryConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(CategoryId),
+                        CategoryConstraints.IdMaxLength
+                    )
+                );
+
+            RuleFor(c => c.ApplicationUserId)
+                .NotEmpty()
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(ApplicationUserId)))
+                .MaximumLength(ApplicationUserConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(ApplicationUserId),
+                        ApplicationUserConstraints.IdMaxLength
+                    )
+                );
         }
     }
 }

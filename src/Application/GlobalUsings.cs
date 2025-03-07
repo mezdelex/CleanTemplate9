@@ -11,6 +11,7 @@ global using Domain.Cache;
 global using Domain.Entities;
 global using Domain.Exceptions;
 global using static Domain.Extensions.Collections;
+global using Domain.Identity;
 global using Domain.Persistence;
 global using Domain.Specifications;
 global using FluentValidation;

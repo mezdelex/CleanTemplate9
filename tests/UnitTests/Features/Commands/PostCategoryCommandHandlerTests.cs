@@ -1,4 +1,4 @@
-namespace Application.UnitTests.Categories.PostAsync;
+namespace UnitTests.Features.Commands;
 
 public sealed class PostCategoryCommandHandlerTests
 {

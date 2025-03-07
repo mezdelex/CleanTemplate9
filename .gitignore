@@ -477,5 +477,8 @@ $RECYCLE.BIN/
 # Containers
 .containers
 
+# Cookies
+cookies.txt
+
 # Environment
 # .env

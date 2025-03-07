@@ -1,4 +1,4 @@
-namespace Application.UnitTests.Categories.PostAsync;
+namespace UnitTests.Features.Commands;
 
 public sealed class PatchCategoryCommandHandlerTests
 {
@@ -33,7 +33,7 @@ public sealed class PatchCategoryCommandHandlerTests
     {
         // Arrange
         var patchCategoryCommand = new PatchCategoryCommand(
-            Guid.NewGuid(),
+            Guid.NewGuid().ToString(),
             "Category 1 name",
             "Category 1 description"
         );

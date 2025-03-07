@@ -1,22 +1,19 @@
 namespace Application.Features.DomainEvents;
 
 public record PostedExpenseEvent(
-    Guid Id,
+    string Id,
     string Name,
     string Description,
     double Value,
     DateTime Date,
-    Guid CategoryId
+    string CategoryId,
+    string ApplicationUserId
 )
 {
-    public sealed class PostedExpenseEventConsumer : IConsumer<PostedExpenseEvent>
+    public sealed class PostedExpenseEventConsumer(ILogger<PostedExpenseEventConsumer> logger)
+        : IConsumer<PostedExpenseEvent>
     {
-        private readonly ILogger<PostedExpenseEventConsumer> _logger;
-
-        public PostedExpenseEventConsumer(ILogger<PostedExpenseEventConsumer> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<PostedExpenseEventConsumer> _logger = logger;
 
         public Task Consume(ConsumeContext<PostedExpenseEvent> context)
         {

@@ -1,17 +1,12 @@
 namespace Application.Features.Queries;
 
-public sealed record GetExpenseQuery(Guid Id) : IRequest<ExpenseDTO>
+public sealed record GetExpenseQuery(string Id) : IRequest<ExpenseDTO>
 {
-    public sealed class GetExpenseQueryHandler : IRequestHandler<GetExpenseQuery, ExpenseDTO>
+    public sealed class GetExpenseQueryHandler(IExpensesRepository repository, IMapper mapper)
+        : IRequestHandler<GetExpenseQuery, ExpenseDTO>
     {
-        private readonly IExpensesRepository _repository;
-        private readonly IMapper _mapper;
-
-        public GetExpenseQueryHandler(IExpensesRepository repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        private readonly IExpensesRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<ExpenseDTO> Handle(
             GetExpenseQuery request,
@@ -34,7 +29,14 @@ public sealed record GetExpenseQuery(Guid Id) : IRequest<ExpenseDTO>
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)));
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)))
+                .MaximumLength(ExpenseConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(Id),
+                        ExpenseConstraints.IdMaxLength
+                    )
+                );
         }
     }
 }

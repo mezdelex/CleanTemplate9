@@ -1,35 +1,27 @@
 namespace Application.Features.Commands;
 
 public sealed record PatchExpenseCommand(
-    Guid Id,
+    string Id,
     string Name,
     string Description,
     double Value,
-    Guid CategoryId
+    string CategoryId,
+    string ApplicationUserId
 ) : IRequest
 {
-    public sealed class PatchExpenseCommandHandler : IRequestHandler<PatchExpenseCommand>
+    public sealed class PatchExpenseCommandHandler(
+        IValidator<PatchExpenseCommand> validator,
+        IMapper mapper,
+        IExpensesRepository repository,
+        IUnitOfWork uow,
+        IEventBus eventBus
+    ) : IRequestHandler<PatchExpenseCommand>
     {
-        private readonly IValidator<PatchExpenseCommand> _validator;
-        private readonly IMapper _mapper;
-        private readonly IExpensesRepository _repository;
-        private readonly IUnitOfWork _uow;
-        private readonly IEventBus _eventBus;
-
-        public PatchExpenseCommandHandler(
-            IValidator<PatchExpenseCommand> validator,
-            IMapper mapper,
-            IExpensesRepository repository,
-            IUnitOfWork uow,
-            IEventBus eventBus
-        )
-        {
-            _validator = validator;
-            _mapper = mapper;
-            _repository = repository;
-            _uow = uow;
-            _eventBus = eventBus;
-        }
+        private readonly IValidator<PatchExpenseCommand> _validator = validator;
+        private readonly IMapper _mapper = mapper;
+        private readonly IExpensesRepository _repository = repository;
+        private readonly IUnitOfWork _uow = uow;
+        private readonly IEventBus _eventBus = eventBus;
 
         public async Task Handle(PatchExpenseCommand request, CancellationToken cancellationToken)
         {
@@ -55,8 +47,13 @@ public sealed record PatchExpenseCommand(
             RuleFor(c => c.Id)
                 .NotEmpty()
                 .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)))
-                .Must(id => id.GetType().Equals(typeof(Guid)))
-                .WithMessage(GenericValidationMessages.ShouldBeAGuid(nameof(Id)));
+                .MaximumLength(ExpenseConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(Id),
+                        ExpenseConstraints.IdMaxLength
+                    )
+                );
 
             RuleFor(c => c.Name)
                 .NotEmpty()
@@ -86,7 +83,14 @@ public sealed record PatchExpenseCommand(
 
             RuleFor(c => c.CategoryId)
                 .NotEmpty()
-                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(CategoryId)));
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(CategoryId)))
+                .MaximumLength(ExpenseConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(CategoryId),
+                        CategoryConstraints.IdMaxLength
+                    )
+                );
         }
     }
 }

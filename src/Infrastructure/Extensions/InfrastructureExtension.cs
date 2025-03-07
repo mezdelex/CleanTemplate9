@@ -15,21 +15,17 @@ public static class InfrastructureExtension
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>()
         );
-
         services.AddSingleton<IConnectionMultiplexer>(_ =>
         {
             return ConnectionMultiplexer.Connect($"redis,password={configuration["PASSWORD"]}");
         });
-        services.AddScoped<IDatabase>(provider =>
+        services.AddScoped(provider =>
             provider.GetRequiredService<IConnectionMultiplexer>().GetDatabase()
         );
-        services.AddScoped<IRedisCache, RedisCache>();
         services.AddScoped<IEventBus, RabbitMQEventBus>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IRedisCache, RedisCache>();
         services.AddScoped<ISpecificationEvaluator>(provider => new SpecificationEvaluator(true));
-        services.AddScoped<ICategoriesRepository, CategoriesRepository>();
-        services.AddScoped<IExpensesRepository, ExpensesRepository>();
-
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMassTransit(busRegistrationConfigurator =>
         {
             busRegistrationConfigurator.SetKebabCaseEndpointNameFormatter();
@@ -52,5 +48,9 @@ public static class InfrastructureExtension
                 }
             );
         });
+
+        services.AddScoped<IApplicationUsersRepository, ApplicationUsersRepository>();
+        services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+        services.AddScoped<IExpensesRepository, ExpensesRepository>();
     }
 }

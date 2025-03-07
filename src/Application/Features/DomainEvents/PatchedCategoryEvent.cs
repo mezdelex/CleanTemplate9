@@ -1,15 +1,11 @@
 namespace Application.Features.DomainEvents;
 
-public sealed record PatchedCategoryEvent(Guid Id, string Name, string Description)
+public sealed record PatchedCategoryEvent(string Id, string Name, string Description)
 {
-    public sealed class PatchedCategoryEventConsumer : IConsumer<PatchedCategoryEvent>
+    public sealed class PatchedCategoryEventConsumer(ILogger<PatchedCategoryEventConsumer> logger)
+        : IConsumer<PatchedCategoryEvent>
     {
-        private readonly ILogger<PatchedCategoryEventConsumer> _logger;
-
-        public PatchedCategoryEventConsumer(ILogger<PatchedCategoryEventConsumer> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<PatchedCategoryEventConsumer> _logger = logger;
 
         public Task Consume(ConsumeContext<PatchedCategoryEvent> context)
         {

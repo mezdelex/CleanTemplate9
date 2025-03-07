@@ -1,3 +1,3 @@
 namespace Application.Repositories;
 
-public interface IExpensesRepository : IBaseRepository<Expense> { }
+public interface IExpensesRepository : IBaseRepository<IBaseEntity, Expense> { }

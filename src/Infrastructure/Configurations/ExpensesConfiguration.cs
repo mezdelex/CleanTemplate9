@@ -15,5 +15,11 @@ public class ExpensesConfiguration : IEntityTypeConfiguration<Expense>
             .HasForeignKey(e => e.CategoryId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
+        builder
+            .HasOne(e => e.ApplicationUser)
+            .WithMany(au => au.Expenses)
+            .HasForeignKey(e => e.ApplicationUserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
     }
 }

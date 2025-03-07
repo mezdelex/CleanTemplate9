@@ -3,14 +3,14 @@ namespace Domain.Specifications;
 public sealed class CategoriesSpecification : Specification<Category>
 {
     public CategoriesSpecification(
-        Guid? id = null,
+        string? id = null,
         string? name = null,
         string? containedWord = null
     )
     {
         Query.AsNoTracking();
 
-        if (id != null)
+        if (!string.IsNullOrWhiteSpace(id))
             Query.Where(x => x.Id.Equals(id));
 
         if (!string.IsNullOrWhiteSpace(name))

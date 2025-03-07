@@ -1,4 +1,4 @@
-namespace Application.UnitTests.Expenses.PostAsync;
+namespace UnitTests.Features.Commands;
 
 public sealed class DeleteExpenseCommandHandlerTests
 {
@@ -20,9 +20,9 @@ public sealed class DeleteExpenseCommandHandlerTests
     public async Task DeleteExpenseCommandHandler_ShouldDeleteExpense()
     {
         // Arrange
-        var deleteExpenseCommand = new DeleteExpenseCommand(Guid.NewGuid());
+        var deleteExpenseCommand = new DeleteExpenseCommand(Guid.NewGuid().ToString());
         _repository
-            .Setup(mock => mock.DeleteAsync(It.IsAny<Guid>(), _cancellationToken))
+            .Setup(mock => mock.DeleteAsync(It.IsAny<string>(), _cancellationToken))
             .Verifiable();
         _uow.Setup(mock => mock.SaveChangesAsync(_cancellationToken)).Verifiable();
 
@@ -31,7 +31,7 @@ public sealed class DeleteExpenseCommandHandlerTests
 
         // Assert
         _repository.Verify(
-            mock => mock.DeleteAsync(It.IsAny<Guid>(), _cancellationToken),
+            mock => mock.DeleteAsync(It.IsAny<string>(), _cancellationToken),
             Times.Once
         );
         _uow.Verify(mock => mock.SaveChangesAsync(_cancellationToken), Times.Once);

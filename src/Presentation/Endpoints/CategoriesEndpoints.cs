@@ -6,19 +6,17 @@ public static class CategoriesEndpoints
 
     public static void MapCategoriesEndpoints(this IEndpointRouteBuilder builder)
     {
-        var group = builder.MapGroup("api/categories/");
+        var group = builder.MapGroup(MapGroups.Categories);
 
-        group.MapGet(string.Empty, GetAllCategoriesQueryAsync).RequireAuthorization();
-        group.MapGet(Patterns.IdAsGuidPattern, GetCategoryQueryAsync).RequireAuthorization();
+        group.MapPost(Patterns.AllPattern, GetAllCategoriesQueryAsync).RequireAuthorization();
+        group.MapGet(Patterns.IdPattern, GetCategoryQueryAsync).RequireAuthorization();
         group.MapPatch(string.Empty, PatchCategoryCommandAsync).RequireAuthorization();
         group.MapPost(string.Empty, PostCategoryCommandAsync).RequireAuthorization();
-        group
-            .MapDelete(Patterns.IdAsGuidPattern, DeleteCategoryCommandAsync)
-            .RequireAuthorization();
+        group.MapDelete(Patterns.IdPattern, DeleteCategoryCommandAsync).RequireAuthorization();
     }
 
     public static async Task<IResult> GetAllCategoriesQueryAsync(
-        [FromQuery] GetAllCategoriesQuery query,
+        [FromBody] GetAllCategoriesQuery query,
         ISender sender
     )
     {
@@ -34,14 +32,11 @@ public static class CategoriesEndpoints
         }
     }
 
-    public static async Task<IResult> GetCategoryQueryAsync(
-        [FromRoute] GetCategoryQuery query,
-        ISender sender
-    )
+    public static async Task<IResult> GetCategoryQueryAsync([FromRoute] string id, ISender sender)
     {
         try
         {
-            return Results.Ok(await sender.Send(query));
+            return Results.Ok(await sender.Send(new GetCategoryQuery(id)));
         }
         catch (Exception e)
         {
@@ -90,13 +85,13 @@ public static class CategoriesEndpoints
     }
 
     public static async Task<IResult> DeleteCategoryCommandAsync(
-        [FromRoute] DeleteCategoryCommand command,
+        [FromRoute] string id,
         ISender sender
     )
     {
         try
         {
-            await sender.Send(command);
+            await sender.Send(new DeleteCategoryCommand(id));
 
             return Results.NoContent();
         }

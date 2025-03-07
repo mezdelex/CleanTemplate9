@@ -1,29 +1,20 @@
 namespace Application.Features.Commands;
 
-public sealed record PatchCategoryCommand(Guid Id, string Name, string Description) : IRequest
+public sealed record PatchCategoryCommand(string Id, string Name, string Description) : IRequest
 {
-    public sealed class PatchCategoryCommandHandler : IRequestHandler<PatchCategoryCommand>
+    public sealed class PatchCategoryCommandHandler(
+        IValidator<PatchCategoryCommand> validator,
+        IMapper mapper,
+        ICategoriesRepository repository,
+        IUnitOfWork uow,
+        IEventBus eventBus
+    ) : IRequestHandler<PatchCategoryCommand>
     {
-        private readonly IValidator<PatchCategoryCommand> _validator;
-        private readonly IMapper _mapper;
-        private readonly ICategoriesRepository _repository;
-        private readonly IUnitOfWork _uow;
-        private readonly IEventBus _eventBus;
-
-        public PatchCategoryCommandHandler(
-            IValidator<PatchCategoryCommand> validator,
-            IMapper mapper,
-            ICategoriesRepository repository,
-            IUnitOfWork uow,
-            IEventBus eventBus
-        )
-        {
-            _validator = validator;
-            _mapper = mapper;
-            _repository = repository;
-            _uow = uow;
-            _eventBus = eventBus;
-        }
+        private readonly IValidator<PatchCategoryCommand> _validator = validator;
+        private readonly IMapper _mapper = mapper;
+        private readonly ICategoriesRepository _repository = repository;
+        private readonly IUnitOfWork _uow = uow;
+        private readonly IEventBus _eventBus = eventBus;
 
         public async Task Handle(PatchCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -49,8 +40,13 @@ public sealed record PatchCategoryCommand(Guid Id, string Name, string Descripti
             RuleFor(c => c.Id)
                 .NotEmpty()
                 .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)))
-                .Must(id => id.GetType().Equals(typeof(Guid)))
-                .WithMessage(GenericValidationMessages.ShouldBeAGuid(nameof(Id)));
+                .MaximumLength(CategoryConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(Id),
+                        CategoryConstraints.IdMaxLength
+                    )
+                );
 
             RuleFor(c => c.Name)
                 .NotEmpty()

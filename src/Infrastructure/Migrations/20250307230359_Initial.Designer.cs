@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241116213312_Initial")]
+    [Migration("20250307230359_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -27,9 +27,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -38,8 +37,8 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.HasKey("Id");
 
@@ -48,25 +47,25 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ac525aa3-e305-464f-818f-527eb79c27c2"),
+                            Id = "d94ad811-5089-4925-b9f2-5453f1808849",
                             Description = "Groceries category.",
                             Name = "Groceries"
                         },
                         new
                         {
-                            Id = new Guid("5bf377ce-65da-49ca-a8d5-edd5bb4f4d52"),
+                            Id = "6485d10c-4e98-4f59-af22-558f702a63f7",
                             Description = "Transportation category.",
                             Name = "Transportation"
                         },
                         new
                         {
-                            Id = new Guid("870d2c54-6793-493d-8e73-e79e3c4eaaa9"),
+                            Id = "ddc42823-b2de-47a2-8470-10eddb6248a6",
                             Description = "Leisure category.",
                             Name = "Leisure"
                         },
                         new
                         {
-                            Id = new Guid("4cd3ea1a-5341-4de8-a2f0-55c07b74803c"),
+                            Id = "04dcf5ea-3420-4370-ab66-0e8652ead0f0",
                             Description = "Utilities category.",
                             Name = "Utilities"
                         });
@@ -74,12 +73,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Expense", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CategoryId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -91,73 +94,19 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<double>("Value")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApplicationUserId");
+
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Expenses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("cc72bc1e-3112-45a5-acb2-fa9f9c515d0f"),
-                            CategoryId = new Guid("ac525aa3-e305-464f-818f-527eb79c27c2"),
-                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6451),
-                            Description = "Some chicken bought in the supermarket",
-                            Name = "200g of chicken",
-                            Value = 2.0499999999999998
-                        },
-                        new
-                        {
-                            Id = new Guid("5513d0a7-09b7-4296-95d0-ab958d19264c"),
-                            CategoryId = new Guid("ac525aa3-e305-464f-818f-527eb79c27c2"),
-                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6455),
-                            Description = "Some chicken bought in the supermarket",
-                            Name = "1 can of beans",
-                            Value = 2.0
-                        },
-                        new
-                        {
-                            Id = new Guid("ccef476e-9d6c-4735-801e-8f6dc8686a84"),
-                            CategoryId = new Guid("5bf377ce-65da-49ca-a8d5-edd5bb4f4d52"),
-                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6456),
-                            Description = "Full car tank of 95",
-                            Name = "Full car tank",
-                            Value = 50.0
-                        },
-                        new
-                        {
-                            Id = new Guid("8d785381-f05e-4df1-afa6-3fa75525c8bf"),
-                            CategoryId = new Guid("870d2c54-6793-493d-8e73-e79e3c4eaaa9"),
-                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6458),
-                            Description = "A film I watched",
-                            Name = "Random film",
-                            Value = 5.9000000000000004
-                        },
-                        new
-                        {
-                            Id = new Guid("b0ea3d0b-cfd4-4ec2-b092-a49886fae6ea"),
-                            CategoryId = new Guid("4cd3ea1a-5341-4de8-a2f0-55c07b74803c"),
-                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6460),
-                            Description = "Electricity bill",
-                            Name = "Electricity",
-                            Value = 40.0
-                        },
-                        new
-                        {
-                            Id = new Guid("06e7404d-45d8-4f46-841e-efca5b3dbf21"),
-                            CategoryId = new Guid("4cd3ea1a-5341-4de8-a2f0-55c07b74803c"),
-                            Date = new DateTime(2024, 11, 16, 21, 33, 11, 936, DateTimeKind.Utc).AddTicks(6462),
-                            Description = "Water bill",
-                            Name = "Water",
-                            Value = 15.0
-                        });
                 });
 
             modelBuilder.Entity("Domain.Identity.ApplicationUser", b =>
@@ -360,11 +309,19 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Expense", b =>
                 {
+                    b.HasOne("Domain.Identity.ApplicationUser", "ApplicationUser")
+                        .WithMany("Expenses")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Category", "Category")
                         .WithMany("Expenses")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Category");
                 });
@@ -421,6 +378,11 @@ namespace Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>
+                {
+                    b.Navigation("Expenses");
+                });
+
+            modelBuilder.Entity("Domain.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("Expenses");
                 });

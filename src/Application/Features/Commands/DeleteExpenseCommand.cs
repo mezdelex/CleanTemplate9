@@ -1,17 +1,12 @@
 namespace Application.Features.Commands;
 
-public record DeleteExpenseCommand(Guid Id) : IRequest
+public record DeleteExpenseCommand(string Id) : IRequest
 {
-    public sealed class DeleteExpenseCommandHandler : IRequestHandler<DeleteExpenseCommand>
+    public sealed class DeleteExpenseCommandHandler(IExpensesRepository repository, IUnitOfWork uow)
+        : IRequestHandler<DeleteExpenseCommand>
     {
-        private readonly IExpensesRepository _repository;
-        private readonly IUnitOfWork _uow;
-
-        public DeleteExpenseCommandHandler(IExpensesRepository repository, IUnitOfWork uow)
-        {
-            _repository = repository;
-            _uow = uow;
-        }
+        private readonly IExpensesRepository _repository = repository;
+        private readonly IUnitOfWork _uow = uow;
 
         public async Task Handle(DeleteExpenseCommand request, CancellationToken cancellationToken)
         {
@@ -26,7 +21,14 @@ public record DeleteExpenseCommand(Guid Id) : IRequest
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)));
+                .WithMessage(GenericValidationMessages.ShouldNotBeEmpty(nameof(Id)))
+                .MaximumLength(ExpenseConstraints.IdMaxLength)
+                .WithMessage(
+                    GenericValidationMessages.ShouldNotBeLongerThan(
+                        nameof(Id),
+                        ExpenseConstraints.IdMaxLength
+                    )
+                );
         }
     }
 }

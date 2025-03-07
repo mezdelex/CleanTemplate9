@@ -1,18 +1,19 @@
 namespace Application.Repositories;
 
-public interface IBaseRepository<T>
-    where T : BaseEntity
+public interface IBaseRepository<T, TEntity>
+    where T : IBaseEntity
+    where TEntity : class, IBaseEntity
 {
-    IQueryable<T> ApplySpecification(ISpecification<T> specification);
-    Task<T?> GetBySpecAsync(
-        ISpecification<T> specification,
+    IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification);
+    Task<TEntity?> GetBySpecAsync(
+        ISpecification<TEntity> specification,
         CancellationToken cancellationToken = default
     );
-    Task<List<T>> ListAsync(
-        ISpecification<T> specification,
+    Task<List<TEntity>> ListAsync(
+        ISpecification<TEntity> specification,
         CancellationToken cancellationToken = default
     );
-    Task PostAsync(T entity, CancellationToken cancellationToken = default);
-    Task PatchAsync(T entity, CancellationToken cancellationToken = default);
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task PostAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task PatchAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task DeleteAsync(string id, CancellationToken cancellationToken = default);
 }

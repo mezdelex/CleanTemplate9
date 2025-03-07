@@ -2,28 +2,19 @@ namespace Application.Features.Commands;
 
 public sealed record PostCategoryCommand(string Name, string Description) : IRequest
 {
-    public sealed class PostCategoryCommandHandler : IRequestHandler<PostCategoryCommand>
+    public sealed class PostCategoryCommandHandler(
+        IValidator<PostCategoryCommand> validator,
+        IMapper mapper,
+        ICategoriesRepository repository,
+        IUnitOfWork uow,
+        IEventBus eventBus
+    ) : IRequestHandler<PostCategoryCommand>
     {
-        private readonly IValidator<PostCategoryCommand> _validator;
-        private readonly IMapper _mapper;
-        private readonly ICategoriesRepository _repository;
-        private readonly IUnitOfWork _uow;
-        private readonly IEventBus _eventBus;
-
-        public PostCategoryCommandHandler(
-            IValidator<PostCategoryCommand> validator,
-            IMapper mapper,
-            ICategoriesRepository repository,
-            IUnitOfWork uow,
-            IEventBus eventBus
-        )
-        {
-            _validator = validator;
-            _mapper = mapper;
-            _repository = repository;
-            _uow = uow;
-            _eventBus = eventBus;
-        }
+        private readonly IValidator<PostCategoryCommand> _validator = validator;
+        private readonly IMapper _mapper = mapper;
+        private readonly ICategoriesRepository _repository = repository;
+        private readonly IUnitOfWork _uow = uow;
+        private readonly IEventBus _eventBus = eventBus;
 
         public async Task Handle(PostCategoryCommand request, CancellationToken cancellationToken)
         {

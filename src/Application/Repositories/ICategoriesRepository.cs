@@ -1,3 +1,3 @@
 namespace Application.Repositories;
 
-public interface ICategoriesRepository : IBaseRepository<Category> { }
+public interface ICategoriesRepository : IBaseRepository<IBaseEntity, Category> { }
