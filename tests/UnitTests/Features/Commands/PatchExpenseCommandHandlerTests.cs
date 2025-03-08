@@ -7,6 +7,7 @@ public sealed class PatchExpenseCommandHandlerTests
     private readonly IMapper _mapper;
     private readonly Mock<IExpensesRepository> _repository;
     private readonly Mock<IUnitOfWork> _uow;
+    private readonly Mock<IRedisCache> _redisCache;
     private readonly Mock<IEventBus> _eventBus;
     private readonly PatchExpenseCommandHandler _handler;
 
@@ -17,6 +18,7 @@ public sealed class PatchExpenseCommandHandlerTests
         _mapper = new MapperConfiguration(c => c.AddProfile<ExpensesProfile>()).CreateMapper();
         _repository = new();
         _uow = new();
+        _redisCache = new();
         _eventBus = new();
 
         _handler = new PatchExpenseCommandHandler(
@@ -24,6 +26,7 @@ public sealed class PatchExpenseCommandHandlerTests
             _mapper,
             _repository.Object,
             _uow.Object,
+            _redisCache.Object,
             _eventBus.Object
         );
     }
@@ -48,6 +51,7 @@ public sealed class PatchExpenseCommandHandlerTests
             .Setup(mock => mock.PatchAsync(It.IsAny<Expense>(), _cancellationToken))
             .Verifiable();
         _uow.Setup(mock => mock.SaveChangesAsync(_cancellationToken)).Verifiable();
+        _redisCache.Setup(mock => mock.RemoveKeysByPattern(It.IsAny<string>())).Verifiable();
         _eventBus
             .Setup(mock => mock.PublishAsync(It.IsAny<PatchedExpenseEvent>(), _cancellationToken))
             .Verifiable();
@@ -65,6 +69,7 @@ public sealed class PatchExpenseCommandHandlerTests
             Times.Once
         );
         _uow.Verify(mock => mock.SaveChangesAsync(_cancellationToken), Times.Once);
+        _redisCache.Verify(mock => mock.RemoveKeysByPattern(It.IsAny<string>()), Times.Once);
         _eventBus.Verify(
             mock => mock.PublishAsync(It.IsAny<PatchedExpenseEvent>(), _cancellationToken),
             Times.Once

@@ -7,6 +7,7 @@ public sealed class PostCategoryCommandHandlerTests
     private readonly IMapper _mapper;
     private readonly Mock<ICategoriesRepository> _repository;
     private readonly Mock<IUnitOfWork> _uow;
+    private readonly Mock<IRedisCache> _redisCache;
     private readonly Mock<IEventBus> _eventBus;
     private readonly PostCategoryCommandHandler _handler;
 
@@ -17,6 +18,7 @@ public sealed class PostCategoryCommandHandlerTests
         _mapper = new MapperConfiguration(c => c.AddProfile<CategoriesProfile>()).CreateMapper();
         _repository = new();
         _uow = new();
+        _redisCache = new();
         _eventBus = new();
 
         _handler = new PostCategoryCommandHandler(
@@ -24,6 +26,7 @@ public sealed class PostCategoryCommandHandlerTests
             _mapper,
             _repository.Object,
             _uow.Object,
+            _redisCache.Object,
             _eventBus.Object
         );
     }
@@ -44,6 +47,7 @@ public sealed class PostCategoryCommandHandlerTests
             .Setup(mock => mock.PostAsync(It.IsAny<Category>(), _cancellationToken))
             .Verifiable();
         _uow.Setup(mock => mock.SaveChangesAsync(_cancellationToken)).Verifiable();
+        _redisCache.Setup(mock => mock.RemoveKeysByPattern(It.IsAny<string>())).Verifiable();
         _eventBus
             .Setup(mock => mock.PublishAsync(It.IsAny<PostedCategoryEvent>(), _cancellationToken))
             .Verifiable();
@@ -61,6 +65,7 @@ public sealed class PostCategoryCommandHandlerTests
             Times.Once
         );
         _uow.Verify(mock => mock.SaveChangesAsync(_cancellationToken), Times.Once);
+        _redisCache.Verify(mock => mock.RemoveKeysByPattern(It.IsAny<string>()), Times.Once());
         _eventBus.Verify(
             mock => mock.PublishAsync(It.IsAny<PostedCategoryEvent>(), _cancellationToken),
             Times.Once

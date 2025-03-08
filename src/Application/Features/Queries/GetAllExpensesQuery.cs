@@ -25,7 +25,7 @@ public sealed record GetAllExpensesQuery : BaseRequest, IRequest<PagedList<Expen
         )
         {
             var redisKey =
-                $"{nameof(GetAllExpensesQuery)}#{request.Name}#{request.ContainedWord}#{request.MinDate}#{request.MaxDate}#{request.CategoryId}#{request.ApplicationUserId}#{request.Page}#{request.PageSize}";
+                $"{nameof(Expense)}#{request.Name}#{request.ContainedWord}#{request.MinDate}#{request.MaxDate}#{request.CategoryId}#{request.ApplicationUserId}#{request.Page}#{request.PageSize}";
             var cachedPagedExpenses = await _redisCache.GetCachedData<PagedList<ExpenseDTO>>(
                 redisKey
             );

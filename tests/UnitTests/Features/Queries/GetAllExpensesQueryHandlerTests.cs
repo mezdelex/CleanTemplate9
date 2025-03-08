@@ -38,7 +38,7 @@ public sealed class GetAllExpensesQueryHandlerTests
             PageSize = pageSize,
         };
         var redisKey =
-            $"{nameof(GetAllExpensesQuery)}#{name}#{containedWord}#{null}#{null}#{categoryId}#{applicationUserId}#{page}#{pageSize}";
+            $"{nameof(Expense)}#{name}#{containedWord}#{null}#{null}#{categoryId}#{applicationUserId}#{page}#{pageSize}";
         var expenses = new List<Expense>
         {
             new()

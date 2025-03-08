@@ -23,7 +23,7 @@ public sealed record GetAllApplicationUsersQuery
         )
         {
             var redisKey =
-                $"{nameof(GetAllApplicationUsersQuery)}#{request.Email}#{request.ContainedWord}#{request.Page}#{request.PageSize}";
+                $"{nameof(ApplicationUser)}#{request.Email}#{request.ContainedWord}#{request.Page}#{request.PageSize}";
             var cachedPagedApplicationUsers = await _redisCache.GetCachedData<
                 PagedList<ApplicationUserDTO>
             >(redisKey);

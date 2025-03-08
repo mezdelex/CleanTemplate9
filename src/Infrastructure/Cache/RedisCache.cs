@@ -1,45 +1,43 @@
 namespace Infrastructure.Cache;
 
-public sealed class RedisCache : IRedisCache
+public sealed class RedisCache(
+    IDatabase redisDatabase,
+    IConnectionMultiplexer connectionMultiplexer
+) : IRedisCache
 {
-    private readonly IDatabase _redisDB;
-
-    public RedisCache(IDatabase redisDB)
-    {
-        _redisDB = redisDB;
-    }
-
     public async Task<T?> GetCachedData<T>(string key)
     {
-        var value = await _redisDB.StringGetAsync(key);
-        if (value.HasValue)
-            return JsonSerializer.Deserialize<T>(value.ToString());
+        var value = await redisDatabase.StringGetAsync(key);
 
-        return default;
+        return value.HasValue ? JsonSerializer.Deserialize<T>(value.ToString()) : default;
     }
 
     public async Task SetCachedData<T>(string key, T value, DateTimeOffset dateTimeOffset)
     {
         var expirationTime = dateTimeOffset.DateTime.Subtract(DateTime.Now);
-        await _redisDB.StringSetAsync(
+
+        await redisDatabase.StringSetAsync(
             key,
-            JsonSerializer.Serialize(
-                value,
-                value!.GetType(),
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    WriteIndented = true,
-                }
-            ),
+            JsonSerializer.Serialize(value, value!.GetType()),
             expirationTime
         );
     }
 
-    public async Task RemoveData<T>(string key)
+    public async Task RemoveKeysByPattern(string pattern)
     {
-        var keyExists = await _redisDB.KeyExistsAsync(key);
-        if (keyExists)
-            await _redisDB.KeyDeleteAsync(key);
+        var keys = new List<RedisKey>();
+        foreach (var endpoint in connectionMultiplexer.GetEndPoints())
+        {
+            var server = connectionMultiplexer.GetServer(endpoint);
+            await foreach (var key in server.KeysAsync(pattern: $"*{pattern}*"))
+            {
+                keys.Add(key);
+            }
+        }
+
+        if (keys.Count > 0)
+        {
+            await redisDatabase.KeyDeleteAsync([.. keys]);
+        }
     }
 }

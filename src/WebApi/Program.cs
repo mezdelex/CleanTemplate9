@@ -1,3 +1,5 @@
+using Presentation.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +27,7 @@ builder
 
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
+builder.Services.AddPresentationDependencies();
 
 builder.Host.UseSerilog(
     (context, configuration) => configuration.ReadFrom.Configuration(context.Configuration)

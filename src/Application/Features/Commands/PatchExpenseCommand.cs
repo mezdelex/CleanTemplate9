@@ -14,6 +14,7 @@ public sealed record PatchExpenseCommand(
         IMapper mapper,
         IExpensesRepository repository,
         IUnitOfWork uow,
+        IRedisCache redisCache,
         IEventBus eventBus
     ) : IRequestHandler<PatchExpenseCommand>
     {
@@ -21,6 +22,7 @@ public sealed record PatchExpenseCommand(
         private readonly IMapper _mapper = mapper;
         private readonly IExpensesRepository _repository = repository;
         private readonly IUnitOfWork _uow = uow;
+        private readonly IRedisCache _redisCache = redisCache;
         private readonly IEventBus _eventBus = eventBus;
 
         public async Task Handle(PatchExpenseCommand request, CancellationToken cancellationToken)
@@ -33,6 +35,7 @@ public sealed record PatchExpenseCommand(
 
             await _repository.PatchAsync(expenseToPatch, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);
+            await _redisCache.RemoveKeysByPattern(nameof(Expense));
             await _eventBus.PublishAsync(
                 _mapper.Map<PatchedExpenseEvent>(expenseToPatch),
                 cancellationToken

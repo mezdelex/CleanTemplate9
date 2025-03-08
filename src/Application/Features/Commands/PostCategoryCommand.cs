@@ -7,6 +7,7 @@ public sealed record PostCategoryCommand(string Name, string Description) : IReq
         IMapper mapper,
         ICategoriesRepository repository,
         IUnitOfWork uow,
+        IRedisCache redisCache,
         IEventBus eventBus
     ) : IRequestHandler<PostCategoryCommand>
     {
@@ -14,6 +15,7 @@ public sealed record PostCategoryCommand(string Name, string Description) : IReq
         private readonly IMapper _mapper = mapper;
         private readonly ICategoriesRepository _repository = repository;
         private readonly IUnitOfWork _uow = uow;
+        private readonly IRedisCache _redisCache = redisCache;
         private readonly IEventBus _eventBus = eventBus;
 
         public async Task Handle(PostCategoryCommand request, CancellationToken cancellationToken)
@@ -26,6 +28,7 @@ public sealed record PostCategoryCommand(string Name, string Description) : IReq
 
             await _repository.PostAsync(categoryToPost, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);
+            await _redisCache.RemoveKeysByPattern(nameof(Category));
             await _eventBus.PublishAsync(
                 _mapper.Map<PostedCategoryEvent>(categoryToPost),
                 cancellationToken

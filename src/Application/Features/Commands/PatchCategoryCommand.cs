@@ -7,6 +7,7 @@ public sealed record PatchCategoryCommand(string Id, string Name, string Descrip
         IMapper mapper,
         ICategoriesRepository repository,
         IUnitOfWork uow,
+        IRedisCache redisCache,
         IEventBus eventBus
     ) : IRequestHandler<PatchCategoryCommand>
     {
@@ -14,6 +15,7 @@ public sealed record PatchCategoryCommand(string Id, string Name, string Descrip
         private readonly IMapper _mapper = mapper;
         private readonly ICategoriesRepository _repository = repository;
         private readonly IUnitOfWork _uow = uow;
+        private readonly IRedisCache _redisCache = redisCache;
         private readonly IEventBus _eventBus = eventBus;
 
         public async Task Handle(PatchCategoryCommand request, CancellationToken cancellationToken)
@@ -26,6 +28,7 @@ public sealed record PatchCategoryCommand(string Id, string Name, string Descrip
 
             await _repository.PatchAsync(categoryToPatch, cancellationToken);
             await _uow.SaveChangesAsync(cancellationToken);
+            await _redisCache.RemoveKeysByPattern(nameof(Category));
             await _eventBus.PublishAsync(
                 _mapper.Map<PatchedCategoryEvent>(categoryToPatch),
                 cancellationToken

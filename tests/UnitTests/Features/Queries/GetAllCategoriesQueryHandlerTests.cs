@@ -37,7 +37,7 @@ public sealed class GetAllCategoriesQueryHandlerTests
             Page = page,
             PageSize = pageSize,
         };
-        var redisKey = $"{nameof(GetAllCategoriesQuery)}#{name}#{containedWord}#{page}#{pageSize}";
+        var redisKey = $"{nameof(Category)}#{name}#{containedWord}#{page}#{pageSize}";
         var categories = new List<Category>
         {
             new()
