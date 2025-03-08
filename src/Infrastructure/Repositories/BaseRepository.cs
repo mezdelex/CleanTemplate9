@@ -1,10 +1,9 @@
 namespace Infrastructure.Repositories;
 
-public class BaseRepository<T, TEntity>(
+public class BaseRepository<TEntity>(
     ApplicationDbContext context,
     ISpecificationEvaluator evaluator
-) : IBaseRepository<T, TEntity>
-    where T : IBaseEntity
+) : IBaseRepository<TEntity>
     where TEntity : class, IBaseEntity
 {
     private readonly ApplicationDbContext _context = context;

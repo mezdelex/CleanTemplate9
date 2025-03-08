@@ -1,7 +1,6 @@
 namespace Application.Repositories;
 
-public interface IBaseRepository<T, TEntity>
-    where T : IBaseEntity
+public interface IBaseRepository<TEntity>
     where TEntity : class, IBaseEntity
 {
     IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification);
