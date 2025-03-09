@@ -26,9 +26,8 @@ public sealed class RedisCache(
     public async Task RemoveKeysByPattern(string pattern)
     {
         var keys = new List<RedisKey>();
-        foreach (var endpoint in connectionMultiplexer.GetEndPoints())
+        foreach (var server in connectionMultiplexer.GetServers())
         {
-            var server = connectionMultiplexer.GetServer(endpoint);
             await foreach (var key in server.KeysAsync(pattern: $"*{pattern}*"))
             {
                 keys.Add(key);

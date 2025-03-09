@@ -1,14 +1,7 @@
 namespace Infrastructure.MessageBrokers.RabbitMQ;
 
-public sealed class RabbitMQEventBus : IEventBus
+public sealed class RabbitMQEventBus(IPublishEndpoint publishEndpoint) : IEventBus
 {
-    private readonly IPublishEndpoint _publishEndpoint;
-
-    public RabbitMQEventBus(IPublishEndpoint publishEndpoint)
-    {
-        _publishEndpoint = publishEndpoint;
-    }
-
     public Task PublishAsync<T>(T message, CancellationToken cancellationToken = default)
-        where T : class => _publishEndpoint.Publish(message, cancellationToken);
+        where T : class => publishEndpoint.Publish(message, cancellationToken);
 }
