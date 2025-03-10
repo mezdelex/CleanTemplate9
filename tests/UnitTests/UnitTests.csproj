@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="autofixture" Version="4.18.1" />
     <PackageReference Include="automapper" Version="13.0.1" />
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="fluentassertions" Version="6.12.2" />

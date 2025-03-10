@@ -31,19 +31,22 @@ public sealed class PostExpenseCommandHandlerTests
         );
     }
 
-    [Fact]
-    public async Task PostExpenseCommandHandler_ShouldPostExpenseAndPublishEventAsync()
+    [Theory]
+    [MemberData(nameof(ExpensesMock.GetExpenses), MemberType = typeof(ExpensesMock))]
+    public async Task PostExpenseCommandHandler_ShouldPostExpenseAndPublishEventAsync(
+        IEnumerable<Expense> expenses
+    )
     {
         // Arrange
-        var postExpenseCommand = new PostExpenseCommand(
-            "Expense 1 name",
-            "Expense 1 description",
-            1,
-            new Guid().ToString(),
-            new Guid().ToString()
+        var request = new PostExpenseCommand(
+            expenses.First().Name,
+            expenses.First().Description,
+            expenses.First().Value,
+            expenses.First().CategoryId,
+            expenses.First().ApplicationUserId
         );
         _validator
-            .Setup(mock => mock.ValidateAsync(postExpenseCommand, _cancellationToken))
+            .Setup(mock => mock.ValidateAsync(request, _cancellationToken))
             .ReturnsAsync(new ValidationResult())
             .Verifiable();
         _repository
@@ -56,7 +59,7 @@ public sealed class PostExpenseCommandHandlerTests
             .Verifiable();
 
         // Act
-        await _handler.Handle(postExpenseCommand, _cancellationToken);
+        await _handler.Handle(request, _cancellationToken);
 
         // Assert
         _validator.Verify(

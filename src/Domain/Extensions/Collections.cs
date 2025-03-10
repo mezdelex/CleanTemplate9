@@ -3,7 +3,7 @@ namespace Domain.Extensions;
 public static class Collections
 {
     public sealed record PagedList<T>(
-        List<T> Items,
+        IEnumerable<T> Items,
         int Page,
         int PageSize,
         int TotalCount,
@@ -23,6 +23,20 @@ public static class Collections
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
+        var hasPreviousPage = page > 1;
+        var hasNextPage = page * pageSize < totalCount;
+
+        return new PagedList<T>(items, page, pageSize, totalCount, hasPreviousPage, hasNextPage);
+    }
+
+    public static PagedList<T> ToPagedList<T>(
+        this IEnumerable<T> enumerable,
+        int page,
+        int pageSize
+    )
+    {
+        var totalCount = enumerable.Count();
+        var items = enumerable.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         var hasPreviousPage = page > 1;
         var hasNextPage = page * pageSize < totalCount;
 

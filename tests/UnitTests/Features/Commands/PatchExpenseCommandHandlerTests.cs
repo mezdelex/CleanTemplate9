@@ -31,17 +31,20 @@ public sealed class PatchExpenseCommandHandlerTests
         );
     }
 
-    [Fact]
-    public async Task PatchExpenseCommandHandler_ShouldPatchExpenseAndPublishEventAsync()
+    [Theory]
+    [MemberData(nameof(ExpensesMock.GetExpenses), MemberType = typeof(ExpensesMock))]
+    public async Task PatchExpenseCommandHandler_ShouldPatchExpenseAndPublishEventAsync(
+        IEnumerable<Expense> expenses
+    )
     {
         // Arrange
-        var patchExpenseCommand = new PatchExpenseCommand(
-            Guid.NewGuid().ToString(),
-            "Expense 1 name",
-            "Expense 1 description",
-            1,
-            new Guid().ToString(),
-            new Guid().ToString()
+        var request = new PatchExpenseCommand(
+            expenses.First().Id,
+            expenses.First().Name,
+            expenses.First().Description,
+            expenses.First().Value,
+            expenses.First().CategoryId,
+            expenses.First().ApplicationUserId
         );
         _validator
             .Setup(mock => mock.ValidateAsync(It.IsAny<PatchExpenseCommand>(), _cancellationToken))
@@ -57,7 +60,7 @@ public sealed class PatchExpenseCommandHandlerTests
             .Verifiable();
 
         // Act
-        await _handler.Handle(patchExpenseCommand, _cancellationToken);
+        await _handler.Handle(request, _cancellationToken);
 
         // Assert
         _validator.Verify(

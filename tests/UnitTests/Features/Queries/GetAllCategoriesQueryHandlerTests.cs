@@ -11,7 +11,11 @@ public sealed class GetAllCategoriesQueryHandlerTests
     public GetAllCategoriesQueryHandlerTests()
     {
         _cancellationToken = new();
-        _mapper = new MapperConfiguration(c => c.AddProfile<CategoriesProfile>()).CreateMapper();
+        _mapper = new MapperConfiguration(c =>
+        {
+            c.AddProfile<CategoriesProfile>();
+            c.AddProfile<ExpensesProfile>();
+        }).CreateMapper();
         _repository = new();
         _redisCache = new();
 
@@ -22,37 +26,22 @@ public sealed class GetAllCategoriesQueryHandlerTests
         );
     }
 
-    [Fact]
-    public async Task GetAllCategoriesQueryHandler_ShouldReturnPagedListOfRequestedCategoriesAsListOfCategoryDTOAndMetadata()
+    [Theory]
+    [MemberData(nameof(CategoriesMock.GetCategories), MemberType = typeof(CategoriesMock))]
+    public async Task GetAllCategoriesQueryHandler_ShouldReturnPagedListOfRequestedCategoriesAsListOfCategoryDTOAndMetadata(
+        IEnumerable<Category> categories
+    )
     {
         // Arrange
-        var name = string.Empty;
-        var containedWord = "am";
-        var page = 1;
-        var pageSize = 2;
-        var getAllCategoriesQuery = new GetAllCategoriesQuery
+        var request = new GetAllCategoriesQuery
         {
-            Name = name,
-            ContainedWord = containedWord,
-            Page = page,
-            PageSize = pageSize,
+            Name = categories.First().Name,
+            ContainedWord = categories.First().Name,
+            Page = 1,
+            PageSize = categories.Count(),
         };
-        var redisKey = $"{nameof(Category)}#{name}#{containedWord}#{page}#{pageSize}";
-        var categories = new List<Category>
-        {
-            new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = "Name 1",
-                Description = "Description 1",
-            },
-            new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = "Name 2",
-                Description = "Description 2",
-            },
-        };
+        var redisKey =
+            $"{nameof(Category)}#{request.Name}#{request.ContainedWord}#{request.Page}#{request.PageSize}";
         _repository
             .Setup(mock => mock.ApplySpecification(It.IsAny<CategoriesSpecification>()))
             .Returns(categories.BuildMock())
@@ -72,20 +61,21 @@ public sealed class GetAllCategoriesQueryHandlerTests
             .Verifiable();
 
         // Act
-        var result = await _handler.Handle(getAllCategoriesQuery, _cancellationToken);
+        var result = await _handler.Handle(request, _cancellationToken);
 
         // Assert
-        result.Items[0].Id.Should().Be(categories[0].Id);
-        result.Items[0].Name.Should().Be(categories[0].Name);
-        result.Items[0].Description.Should().Be(categories[0].Description);
-        result.Items[1].Id.Should().Be(categories[1].Id);
-        result.Items[1].Name.Should().Be(categories[1].Name);
-        result.Items[1].Description.Should().Be(categories[1].Description);
-        result.TotalCount.Should().Be(categories.Count);
-        result.Page.Should().Be(page);
-        result.PageSize.Should().Be(pageSize);
-        result.HasPreviousPage.Should().Be(false);
-        result.HasNextPage.Should().Be(false);
+        result
+            .Should()
+            .BeEquivalentTo(
+                new PagedList<CategoryDTO>(
+                    [.. categories.Select(_mapper.Map<CategoryDTO>)],
+                    1,
+                    categories.Count(),
+                    categories.Count(),
+                    false,
+                    false
+                )
+            );
         _repository.Verify(
             mock => mock.ApplySpecification(It.IsAny<CategoriesSpecification>()),
             Times.Once

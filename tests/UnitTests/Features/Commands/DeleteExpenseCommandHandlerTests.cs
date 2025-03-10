@@ -16,18 +16,19 @@ public sealed class DeleteExpenseCommandHandlerTests
         _handler = new DeleteExpenseCommandHandler(_repository.Object, _uow.Object);
     }
 
-    [Fact]
-    public async Task DeleteExpenseCommandHandler_ShouldDeleteExpense()
+    [Theory]
+    [MemberData(nameof(ExpensesMock.GetExpenses), MemberType = typeof(ExpensesMock))]
+    public async Task DeleteExpenseCommandHandler_ShouldDeleteExpense(IEnumerable<Expense> expenses)
     {
         // Arrange
-        var deleteExpenseCommand = new DeleteExpenseCommand(Guid.NewGuid().ToString());
+        var request = new DeleteExpenseCommand(expenses.First().Id);
         _repository
             .Setup(mock => mock.DeleteAsync(It.IsAny<string>(), _cancellationToken))
             .Verifiable();
         _uow.Setup(mock => mock.SaveChangesAsync(_cancellationToken)).Verifiable();
 
         // Act
-        await _handler.Handle(deleteExpenseCommand, _cancellationToken);
+        await _handler.Handle(request, _cancellationToken);
 
         // Assert
         _repository.Verify(

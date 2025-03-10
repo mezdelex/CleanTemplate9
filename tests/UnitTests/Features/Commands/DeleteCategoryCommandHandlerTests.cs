@@ -16,11 +16,14 @@ public sealed class DeleteCategoryCommandHandlerTests
         _handler = new DeleteCategoryCommandHandler(_repository.Object, _uow.Object);
     }
 
-    [Fact]
-    public async Task DeleteCategoryCommandHandler_ShouldDeleteCategory()
+    [Theory]
+    [MemberData(nameof(CategoriesMock.GetCategories), MemberType = typeof(CategoriesMock))]
+    public async Task DeleteCategoryCommandHandler_ShouldDeleteCategory(
+        IEnumerable<Category> categories
+    )
     {
         // Arrange
-        var deleteCategoryCommand = new DeleteCategoryCommand(Guid.NewGuid().ToString());
+        var deleteCategoryCommand = new DeleteCategoryCommand(categories.First().Id);
         _repository
             .Setup(mock => mock.DeleteAsync(It.IsAny<string>(), _cancellationToken))
             .Verifiable();

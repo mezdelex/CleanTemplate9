@@ -31,16 +31,19 @@ public sealed class PostCategoryCommandHandlerTests
         );
     }
 
-    [Fact]
-    public async Task PostCategoryCommandHandler_ShouldPostCategoryAndPublishEventAsync()
+    [Theory]
+    [MemberData(nameof(CategoriesMock.GetCategories), MemberType = typeof(CategoriesMock))]
+    public async Task PostCategoryCommandHandler_ShouldPostCategoryAndPublishEventAsync(
+        IEnumerable<Category> categories
+    )
     {
         // Arrange
-        var postCategoryCommand = new PostCategoryCommand(
-            "Category 1 name",
-            "Category 1 description"
+        var request = new PostCategoryCommand(
+            categories.First().Name,
+            categories.First().Description
         );
         _validator
-            .Setup(mock => mock.ValidateAsync(postCategoryCommand, _cancellationToken))
+            .Setup(mock => mock.ValidateAsync(request, _cancellationToken))
             .ReturnsAsync(new ValidationResult())
             .Verifiable();
         _repository
@@ -53,7 +56,7 @@ public sealed class PostCategoryCommandHandlerTests
             .Verifiable();
 
         // Act
-        await _handler.Handle(postCategoryCommand, _cancellationToken);
+        await _handler.Handle(request, _cancellationToken);
 
         // Assert
         _validator.Verify(

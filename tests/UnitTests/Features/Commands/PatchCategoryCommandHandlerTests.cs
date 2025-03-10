@@ -31,14 +31,17 @@ public sealed class PatchCategoryCommandHandlerTests
         );
     }
 
-    [Fact]
-    public async Task PatchCategoryCommandHandler_ShouldPatchCategoryAndPublishEventAsync()
+    [Theory]
+    [MemberData(nameof(CategoriesMock.GetCategories), MemberType = typeof(CategoriesMock))]
+    public async Task PatchCategoryCommandHandler_ShouldPatchCategoryAndPublishEventAsync(
+        IEnumerable<Category> categories
+    )
     {
         // Arrange
-        var patchCategoryCommand = new PatchCategoryCommand(
-            Guid.NewGuid().ToString(),
-            "Category 1 name",
-            "Category 1 description"
+        var request = new PatchCategoryCommand(
+            categories.First().Id,
+            categories.First().Name,
+            categories.First().Description
         );
         _validator
             .Setup(mock => mock.ValidateAsync(It.IsAny<PatchCategoryCommand>(), _cancellationToken))
@@ -54,7 +57,7 @@ public sealed class PatchCategoryCommandHandlerTests
             .Verifiable();
 
         // Act
-        await _handler.Handle(patchCategoryCommand, _cancellationToken);
+        await _handler.Handle(request, _cancellationToken);
 
         // Assert
         _validator.Verify(

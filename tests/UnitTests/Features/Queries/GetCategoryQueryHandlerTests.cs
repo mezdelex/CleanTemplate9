@@ -10,38 +10,36 @@ public sealed class GetCategoryQueryHandlerTests
     public GetCategoryQueryHandlerTests()
     {
         _cancellationToken = new();
-        _mapper = new MapperConfiguration(c => c.AddProfile<CategoriesProfile>()).CreateMapper();
+        _mapper = new MapperConfiguration(c =>
+        {
+            c.AddProfile<CategoriesProfile>();
+            c.AddProfile<ExpensesProfile>();
+        }).CreateMapper();
         _repository = new();
 
         _handler = new GetCategoryQueryHandler(_repository.Object, _mapper);
     }
 
-    [Fact]
-    public async Task Handle_ValidIdGetCategoryQuery_ShouldReturnRequestedCategoryAsCategoryDTOAsync()
+    [Theory]
+    [MemberData(nameof(CategoriesMock.GetCategories), MemberType = typeof(CategoriesMock))]
+    public async Task Handle_ValidIdGetCategoryQuery_ShouldReturnRequestedCategoryAsCategoryDTOAsync(
+        IEnumerable<Category> categories
+    )
     {
         // Arrange
-        var guid = Guid.NewGuid().ToString();
-        var getCategoryQuery = new GetCategoryQuery(guid);
-        var category = new Category
-        {
-            Id = guid,
-            Name = "Name 1",
-            Description = "Description 1",
-        };
+        var request = new GetCategoryQuery(categories.First().Id);
         _repository
             .Setup(mock =>
                 mock.GetBySpecAsync(It.IsAny<CategoriesSpecification>(), _cancellationToken)
             )
-            .ReturnsAsync(category)
+            .ReturnsAsync(categories.First())
             .Verifiable();
 
         // Act
-        var result = await _handler.Handle(getCategoryQuery, _cancellationToken);
+        var result = await _handler.Handle(request, _cancellationToken);
 
         // Assert
-        result.Id.Should().Be(category.Id);
-        result.Name.Should().Be(category.Name);
-        result.Description.Should().Be(category.Description);
+        result.Should().BeEquivalentTo(_mapper.Map<CategoryDTO>(categories.First()));
         _repository.Verify(
             mock => mock.GetBySpecAsync(It.IsAny<CategoriesSpecification>(), _cancellationToken),
             Times.Once
