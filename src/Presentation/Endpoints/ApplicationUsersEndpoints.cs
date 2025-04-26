@@ -9,9 +9,7 @@ public static class ApplicationUsersEndpoints
         var group = builder.MapGroup(MapGroups.ApplicationUsers);
 
         group.MapPost(Patterns.AllPattern, GetAllApplicationUsersQueryAsync).RequireAuthorization();
-        group
-            .MapGet(Patterns.IdPattern, GetApplicationUserQueryAsync)
-            .RequireAuthorization();
+        group.MapGet(Patterns.IdPattern, GetApplicationUserQueryAsync).RequireAuthorization();
     }
 
     public static async Task<IResult> GetAllApplicationUsersQueryAsync(

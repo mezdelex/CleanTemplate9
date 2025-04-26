@@ -12,9 +12,7 @@ public static class ExpensesEndpoints
         group.MapGet(Patterns.IdPattern, GetExpenseQueryAsync).RequireAuthorization();
         group.MapPatch(string.Empty, PatchExpenseCommandAsync).RequireAuthorization();
         group.MapPost(string.Empty, PostExpenseCommandAsync).RequireAuthorization();
-        group
-            .MapDelete(Patterns.IdPattern, DeleteExpenseCommandAsync)
-            .RequireAuthorization();
+        group.MapDelete(Patterns.IdPattern, DeleteExpenseCommandAsync).RequireAuthorization();
     }
 
     public static async Task<IResult> GetAllExpensesQueryAsync(
