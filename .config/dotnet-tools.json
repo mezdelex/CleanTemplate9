@@ -8,6 +8,13 @@
         "husky"
       ],
       "rollForward": false
+    },
+    "csharpier": {
+      "version": "1.0.0",
+      "commands": [
+        "csharpier"
+      ],
+      "rollForward": false
     }
   }
 }
